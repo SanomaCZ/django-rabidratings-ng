@@ -1,4 +1,5 @@
+{% load i18n %}
 <div>
-	Vaše hodnocení: <strong>{{ event.starts_value }} - {{ event.verbal_value }}</strong>.<br />
-	Názor můžete kdykoliv změnit.
+	{% trans "Rating from you" %}: <strong>{{ event.starts_value }} - {{ event.verbal_value }}</strong>.<br />
+	{% trans "You can change the view" %}.
 </div>

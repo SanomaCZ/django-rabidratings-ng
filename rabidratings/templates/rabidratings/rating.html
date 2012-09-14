@@ -1,3 +1,4 @@
+{% load i18n %}
 <div id="rabidRatingUser-{{ rating_key }}-{{ user_rating }}_{{ max_stars }}" class="rabidRatingUser">
     <div class="wrapper">
 	    	<div id="rabidratings_csrf">{% csrf_token %}</div>
@@ -7,7 +8,7 @@
 			</span>
     </div>
     <div id="rabidRating-{{ rating_key }}-description" class="ratingText">
-        Vaše hodnocení: {{ user_rating|default:"Zatím jste nehodnotil" }}
+        {% trans "Rating from you" %}: {% if user_rating %}{{ user_rating }}{% else %}{% trans "You have not yet rated" %}{% endif %}
     </div>
 </div>
 
@@ -19,6 +20,6 @@
 			</span>
     </div>
     <div id="rabidRatingStatistics-{{ rating_key }}-description" class="ratingText">
-        <p>Hodnocení (<strong class="totalVotes">{{ total_votes }}</strong> uživateli): <strong class="ratingAvg">{{ rating }}</strong></p>
+        <p>{% trans "Rating" %} (<strong class="totalVotes">{{ total_votes }}</strong> {% trans "by users" %}): <strong class="ratingAvg">{{ rating }}</strong></p>
     </div>
 </div>
