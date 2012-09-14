@@ -44,7 +44,7 @@ def show_rating(context, obj):
     except RatingEvent.DoesNotExist:
         pass
     else:
-        user_rating = rating_event.starts_value
+        user_rating = rating_event.stars_value
     return {
         'rating_key': rating.key,
         'total_votes': rating.total_votes,

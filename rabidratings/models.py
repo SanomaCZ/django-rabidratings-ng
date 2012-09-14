@@ -140,7 +140,7 @@ class RatingEvent(models.Model):
         return unicode(self.target)
 
     @property
-    def starts_value(self):
+    def stars_value(self):
         """
         Returns value represen in range 1 - 5.
         """
