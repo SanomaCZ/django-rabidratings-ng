@@ -24,7 +24,7 @@ var RabidRatings = function (options) {
 			starMargin: 4,  /* The width in pixels between each star. */
 			scale: 5,       /* It's a five-star scale. */
 			snap: 1,         /* Will snap to the nearest star (can be made a decimal, too). */
-			vote_desc: {1: '1', 2: '2', 3:'3', 4:'4', 5:'5'}
+			verbalValues: {1: 'Very bad', 2: 'Bad', 3: 'Avarage', 4: 'Good', 5: 'Excellent'} /* verbal values for individual stars*/
 		},
 		
 		init: function() {
@@ -73,9 +73,7 @@ var RabidRatings = function (options) {
 						var fillPercent = this.getVotePercent(fill);
 						var step = (100 / this.options.scale) * this.options.snap;
 						var nextStep = Math.floor(fillPercent / step) + 1;
-						//$('#log1').html('fill: '+fill+' perc: '+fillPercent+' step: '+step+' nextstep: '+nextStep);
-						//$('#log2').html(this.options.vote_desc[nextStep]);
-						$(el.textEl).html(this.options.vote_desc[nextStep]);
+						$(el.textEl).html(this.options.verbalValues[nextStep]);
 						this.fillVote(nextStep * step, el);
 					}, this);
 
@@ -99,7 +97,6 @@ var RabidRatings = function (options) {
 						$(el).addClass('ratingVoted');
 						$(el.textEl).addClass('loading');
 						var votePercent = this.getVotePercent(el.newFill);
-						//$('#log3').html(votePercent);
 						if (this.options.url != null) {
 							$.ajax({
 								beforeSend: function(xhrObj){
@@ -204,6 +201,6 @@ var RabidRatings = function (options) {
 
 $(document).ready(function(e) {
 	var rating = new RabidRatings({url:rabidratings_submit_url,
-								   vote_desc:rabidratings_vote_desc
+								   verbalValues:rabidratings_verbal_values
 		});
 });
