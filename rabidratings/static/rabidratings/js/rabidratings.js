@@ -32,7 +32,7 @@ var RabidRatings = function (options) {
 			var votedColor  = this.options.votedColor;
 			var fillColor   = this.options.fillColor;
 
-			$.each($('.rabidRating'), $.proxy(function(index, el) {
+			$.each($('.rabidRatingUser'), $.proxy(function(index, el) {
 				if (($.browser.msie && $.browser.version=="6.0")) {
 					//Replaces all the fancy with a text description of the votes for IE6.
 					//If you want IE6 users to have something fancier to look at, add it here.
@@ -81,20 +81,20 @@ var RabidRatings = function (options) {
 
 					el.mouseenter = function(e) {
 						el.oldText = $(el.textEl).html();
-						$(el).toggleClass('.rabidRating .ratingActive')
+						$(el).toggleClass('.rabidRatingUser .ratingActive')
 						el.wrapper.mousemove(el.mouseCrap)
 					}
 
 					el.mouseleave = function(e) {
 						$(el).unbind('mousemove', el.mouseCrap);
-						$(el).toggleClass('.rabidRating .ratingFill');
+						$(el).toggleClass('.rabidRatingUser .ratingFill');
 						$(el.fill).css('width',el.currentFill);
 						$(el.textEl).html(el.oldText);
 					}
 
 					el.click = $.proxy(function(e) {
 						el.currentFill = el.newFill;
-						$(el.fill).toggleClass('.rabidRating .ratingVoted');
+						$(el.fill).toggleClass('.rabidRatingUser .ratingVoted');
 						$(el.wrapper).unbind();
 						$(el).addClass('ratingVoted');
 						$(el.textEl).addClass('loading');
@@ -138,14 +138,7 @@ var RabidRatings = function (options) {
 							el.showError(data.error); return false;
 						}
 					}, this);
-					/*
-					el.updateText = function(xhr) {
-						error = xhr.responseText.split('ERROR:')[1];
-						$(el.textEl).removeClass('loading');
-						if (error) { el.showError(error); return false; }
-						$(el.textEl).html(xhr.responseText);
-					};
-					*/
+					
 					el.showError = $.proxy(function(error) {
 						$(el.textEl).addClass('ratingError');
 						oldTxt = $(el.textEl).html();
@@ -171,7 +164,7 @@ var RabidRatings = function (options) {
 
 		getStarPercentFromId: function(id) {
 			/* Format = anyStringHere-<id>-<float(currentStars)>_(scale); 
-			 * Example: rabidRatings-5-3_5 //Primary key id = 5, 3/5 stars. */
+			 * Example: rabidRatingUser-5_5-3_5 //Primary key id = 5, 3/5 stars. */
 			var stars = id.match(/([^-]+)-(\d*\.?\d+)_(\d*\.?\d+)$/);
 			var ratableId = parseFloat(stars[1]);
 			return this.computeStarPercent(stars[2], stars[3]);
@@ -200,7 +193,7 @@ var RabidRatings = function (options) {
 		},
 				
 		getCsrfProtection: function() {
-			var valueOfHidden = $('#tok').find('input[type=hidden]:first').attr("value");
+			var valueOfHidden = $('#rabidratings_csrf').find('input[type=hidden]:first').attr("value");
 			return valueOfHidden;
 		}
 	}

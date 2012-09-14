@@ -1,52 +1,52 @@
-.rabidRating .wrapper {	
+.rabidRatingUser .wrapper {	
 	cursor: pointer;
 	background: #ccc;
 }
 
-.rabidRating .wrapper {
+.rabidRatingUser .wrapper {
 	overflow: hidden;
 }
 
-.rabidRating span, .rabidRating .wrapper {
+.rabidRatingUser span, .rabidRatingUser .wrapper {
 	display: block;
 	width: /*110*/136px;
-	height: /*25*/40px;
+	height: /*25*/25px;
 }
 
-.rabidRating span {
+.rabidRatingUser span {
 	position: relative;
 	top: 0;
 	left: 0;
 	text-indent: -999em;
 }
 
-.rabidRating .ratingStars {
+.rabidRatingUser .ratingStars {
 	display: block;
 	background: url('../img/rabidhearts.png') no-repeat;
 }
 
-.rabidRating .ratingFill {
+.rabidRatingUser .ratingFill {
 	background-color: #d5252e;
 }
 
-.rabidRating .ratingVoted {
+.rabidRatingUser .ratingVoted {
 	cursor: default;
 	background-color: #0069ff;
 }
 
-.rabidRating .ratingActive {
+.rabidRatingUser .ratingActive {
 	background-color: #ffa800;
 }
 
-.rabidRating .ratingText {
+.rabidRatingUser .ratingText {
 	/* color: #000; */
 }
 
-.rabidRating .ratingText.ratingError {
+.rabidRatingUser .ratingText.ratingError {
 	/* color: #f00; */	
 }
 
-.rabidRating .ratingText.loading {
+.rabidRatingUser .ratingText.loading {
 	background: url('../img/ajax-loading.gif') no-repeat;
 	text-indent: -999em;
 }
@@ -65,7 +65,7 @@
 .rabidRatingStatistics span, .rabidRatingStatistics .wrapper {
 	display: block;
 	width: /*110*/136px;
-	height: /*25*/40px;
+	height: /*25*/25px;
 }
 
 .rabidRatingStatistics span {

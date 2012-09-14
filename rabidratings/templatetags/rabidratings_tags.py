@@ -31,7 +31,7 @@ def show_rating(context, obj):
 
     request = context.get('request', None)
     if not request:
-        return {}
+        raise ValueError('Missing request')
 
     ct = ContentType.objects.get_for_model(obj)
     rating = Rating.objects.get_or_create(target_ct=ct, target_id=obj.id)[0]

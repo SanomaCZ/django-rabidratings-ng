@@ -1,12 +1,10 @@
-<div id="rabidRating-{{ rating_key }}-{{ user_rating }}_{{ max_stars }}" class="rabidRating">
+<div id="rabidRatingUser-{{ rating_key }}-{{ user_rating }}_{{ max_stars }}" class="rabidRatingUser">
     <div class="wrapper">
-		<form action="">
-	    	<div id="tok">{% csrf_token %}</div>
+	    	<div id="rabidratings_csrf">{% csrf_token %}</div>
 			<span class="ratingFill" style="width:{{ percent }}%;">
 				<span class="ratingStars">
 				</span>
 			</span>
-		</form>
     </div>
     <div id="rabidRating-{{ rating_key }}-description" class="ratingText">
         Vaše hodnocení: {{ user_rating|default:"Zatím jste nehodnotil" }}
@@ -15,12 +13,10 @@
 
 <div id="rabidRatingStatistics-{{ rating_key }}-{{ rating }}_{{ max_stars }}" class="rabidRatingStatistics">
     <div class="wrapper">
-		<form action="">
 			<span class="ratingFill" style="width:{{ percent }}%;">
 				<span class="ratingStars">
 				</span>
 			</span>
-		</form>
     </div>
     <div id="rabidRatingStatistics-{{ rating_key }}-description" class="ratingText">
         <p>Hodnocení (<strong class="totalVotes">{{ total_votes }}</strong> uživateli): <strong class="ratingAvg">{{ rating }}</strong></p>
