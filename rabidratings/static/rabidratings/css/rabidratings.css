@@ -9,7 +9,7 @@
 
 .rabidRatingUser span, .rabidRatingUser .wrapper {
 	display: block;
-	width: /*110*/136px;
+	width: /*136*/110px;
 	height: /*25*/25px;
 }
 
@@ -22,11 +22,11 @@
 
 .rabidRatingUser .ratingStars {
 	display: block;
-	background: url('../img/rabidhearts.png') no-repeat;
+	background: url('../img/rabidhearts.png') no-repeat center;
 }
 
 .rabidRatingUser .ratingFill {
-	background-color: #d5252e;
+	background-color: #ffd700;
 }
 
 .rabidRatingUser .ratingVoted {
@@ -64,7 +64,7 @@
 
 .rabidRatingStatistics span, .rabidRatingStatistics .wrapper {
 	display: block;
-	width: /*110*/136px;
+	width: /*110*/110px;
 	height: /*25*/25px;
 }
 
@@ -77,11 +77,11 @@
 
 .rabidRatingStatistics .ratingStars {
 	display: block;
-	background: url('../img/rabidhearts.png') no-repeat;
+	background: url('../img/rabidhearts.png') no-repeat center;
 }
 
 .rabidRatingStatistics .ratingFill {
-	background-color: #d5252e;
+	background-color: orange;
 }
 
 .rabidRatingStatistics .ratingVoted {

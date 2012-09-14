@@ -1,5 +1,8 @@
 {% load i18n %}
 <div id="rabidRatingUser-{{ rating_key }}-{{ user_rating }}_{{ max_stars }}" class="rabidRatingUser">
+    <div id="rabidRating-{{ rating_key }}-description" class="ratingText">
+        {% trans "Rating from you" %}: {% if user_rating %}{{ user_rating }}{% else %}{% trans "You have not yet rated" %}{% endif %}
+    </div>
     <div class="wrapper">
 	    	<div id="rabidratings_csrf">{% csrf_token %}</div>
 			<span class="ratingFill" style="width:{{ percent }}%;">
@@ -7,19 +10,16 @@
 				</span>
 			</span>
     </div>
-    <div id="rabidRating-{{ rating_key }}-description" class="ratingText">
-        {% trans "Rating from you" %}: {% if user_rating %}{{ user_rating }}{% else %}{% trans "You have not yet rated" %}{% endif %}
-    </div>
 </div>
 
 <div id="rabidRatingStatistics-{{ rating_key }}-{{ rating }}_{{ max_stars }}" class="rabidRatingStatistics">
+    <div id="rabidRatingStatistics-{{ rating_key }}-description" class="ratingText">
+        <p>{% trans "Rating" %} (<strong class="totalVotes">{{ total_votes }}</strong> {% trans "by users" %}): <strong class="ratingAvg">{{ rating }}</strong></p>
+    </div>
     <div class="wrapper">
 			<span class="ratingFill" style="width:{{ percent }}%;">
 				<span class="ratingStars">
 				</span>
 			</span>
-    </div>
-    <div id="rabidRatingStatistics-{{ rating_key }}-description" class="ratingText">
-        <p>{% trans "Rating" %} (<strong class="totalVotes">{{ total_votes }}</strong> {% trans "by users" %}): <strong class="ratingAvg">{{ rating }}</strong></p>
     </div>
 </div>

@@ -19,9 +19,9 @@ var RabidRatings = function (options) {
 	rr = {
 		options: {
 			url: null,
-			leftMargin: 2,  /* The width in pixels of the margin before the stars. */
-			starWidth: 25,  /* The width in pixels of each star. */
-			starMargin: 1,  /* The width in pixels between each star. */
+			leftMargin: 0,  /* The width in pixels of the margin before the stars. */
+			starWidth: 17,  /* The width in pixels of each star. */
+			starMargin: 4,  /* The width in pixels between each star. */
 			scale: 5,       /* It's a five-star scale. */
 			snap: 1,         /* Will snap to the nearest star (can be made a decimal, too). */
 			vote_desc: {1: '1', 2: '2', 3:'3', 4:'4', 5:'5'}
