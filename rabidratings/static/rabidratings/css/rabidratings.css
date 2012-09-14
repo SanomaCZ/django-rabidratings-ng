@@ -1,0 +1,107 @@
+.rabidRating .wrapper {	
+	cursor: pointer;
+	background: #ccc;
+}
+
+.rabidRating .wrapper {
+	overflow: hidden;
+}
+
+.rabidRating span, .rabidRating .wrapper {
+	display: block;
+	width: /*110*/136px;
+	height: /*25*/40px;
+}
+
+.rabidRating span {
+	position: relative;
+	top: 0;
+	left: 0;
+	text-indent: -999em;
+}
+
+.rabidRating .ratingStars {
+	display: block;
+	background: url('../img/rabidhearts.png') no-repeat;
+}
+
+.rabidRating .ratingFill {
+	background-color: #d5252e;
+}
+
+.rabidRating .ratingVoted {
+	cursor: default;
+	background-color: #0069ff;
+}
+
+.rabidRating .ratingActive {
+	background-color: #ffa800;
+}
+
+.rabidRating .ratingText {
+	/* color: #000; */
+}
+
+.rabidRating .ratingText.ratingError {
+	/* color: #f00; */	
+}
+
+.rabidRating .ratingText.loading {
+	background: url('../img/ajax-loading.gif') no-repeat;
+	text-indent: -999em;
+}
+
+/* NEXT test */
+
+.rabidRatingStatistics .wrapper {	
+	cursor: default;
+	background: #ccc;
+}
+
+.rabidRatingStatistics .wrapper {
+	overflow: hidden;
+}
+
+.rabidRatingStatistics span, .rabidRatingStatistics .wrapper {
+	display: block;
+	width: /*110*/136px;
+	height: /*25*/40px;
+}
+
+.rabidRatingStatistics span {
+	position: relative;
+	top: 0;
+	left: 0;
+	text-indent: -999em;
+}
+
+.rabidRatingStatistics .ratingStars {
+	display: block;
+	background: url('../img/rabidhearts.png') no-repeat;
+}
+
+.rabidRatingStatistics .ratingFill {
+	background-color: #d5252e;
+}
+
+.rabidRatingStatistics .ratingVoted {
+	cursor: default;
+	background-color: #0069ff;
+}
+
+.rabidRatingStatistics .ratingActive {
+	background-color: #ffa800;
+}
+
+.rabidRatingStatistics .ratingText {
+	/* color: #000; */
+}
+
+.rabidRatingStatistics .ratingText.ratingError {
+	/* color: #f00; */	
+}
+
+.rabidRatingStatistics .ratingText.loading {
+	background: url('../img/ajax-loading.gif') no-repeat;
+	text-indent: -999em;
+}
