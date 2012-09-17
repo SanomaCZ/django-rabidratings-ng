@@ -190,8 +190,8 @@ var RabidRatings = function (options) {
 		},
 				
 		getCsrfProtection: function() {
-			var valueOfHidden = $('#rabidratings_csrf').find('input[type=hidden]:first').attr("value");
-			return valueOfHidden;
+			var csrftoken = $.cookie('csrftoken');
+			return csrftoken;
 		}
 	}
 	$.extend(rr.options, options)
