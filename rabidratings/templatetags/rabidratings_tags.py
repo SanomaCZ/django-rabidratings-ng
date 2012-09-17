@@ -21,13 +21,12 @@ from django.contrib.contenttypes.models import ContentType
 
 from rabidratings.conf import RABIDRATINGS_STATIC_URL
 from rabidratings.models import Rating, RatingEvent
-from rabidratings.managers import get_or_create, get_object
 
 register = template.Library()
 
 
 @register.inclusion_tag("rabidratings/rating.html", takes_context=True)
-def show_rating(context, obj):
+def show_rating(context, obj, show_parts='all'):
     """ Displays necessary html for the rating. """
 
     request = context.get('request', None)
@@ -35,14 +34,14 @@ def show_rating(context, obj):
         raise ValueError('Missing request')
 
     ct = ContentType.objects.get_for_model(obj)
-    rating = get_or_create(Rating, target_ct=ct, target_id=obj.id)[0]
+    rating = Rating.objects.get_or_create(target_ct=ct, target_id=obj.id)[0]
     user_rating = 0
     try:
         lookup = dict(target_ct=ct, target_id=obj.id, ip=request.META['REMOTE_ADDR'], user=None)
         if request.user.is_authenticated():
             lookup.update({'user': request.user})
             lookup.pop('ip', None)
-        rating_event = get_object(RatingEvent, **lookup)
+        rating_event = RatingEvent.objects.get_object(**lookup)
     except RatingEvent.DoesNotExist:
         pass
     else:
@@ -55,6 +54,7 @@ def show_rating(context, obj):
         'percent': rating.percent,
         'max_stars': 5,
         'user_rating': user_rating,
+        'show_parts': show_parts,
         }
 
 

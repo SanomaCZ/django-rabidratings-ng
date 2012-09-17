@@ -25,34 +25,20 @@ from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from rabidratings.managers import _get_subclasses
+from rabidratings.managers import _get_subclasses, BaseRatingManager
 
 qn = connection.ops.quote_name
 
 
-class Rating(models.Model):
-    """
-    This holds the rating value for whichever key you assign.
-
-    Note, instead of using the database to compute the average, since we want to
-    work on Google App Engine, update the counters as an event is added.
-
-    Always use the following to get the Rating object:
-       rating, created = Rating.objects.get_or_create(target_ct=ct, target_id=obj_id)
-    """
+class BaseRating(models.Model):
     target_ct = models.ForeignKey(ContentType, verbose_name=_('Target content type'))
     target_id = models.IntegerField(_('Target ID'), db_index=True)
     target = GenericForeignKey(ct_field="target_ct", fk_field="target_id")
 
-    total_rating = models.IntegerField(verbose_name=_('Total Rating Sum (computed)'), default=0)
-    total_votes = models.IntegerField(verbose_name=_('Total Votes (computed)'), default=0)
-    avg_rating = models.DecimalField(verbose_name=_('Average Rating (computed)'), default="0.0", max_digits=2, decimal_places=1)
-    percent = models.FloatField(verbose_name=_('Percent Fill (computed)'), default=0.0)
+    objects = BaseRatingManager()
 
     class Meta:
-        unique_together = (('target_ct', 'target_id'),)
-        verbose_name = _('Rating')
-        verbose_name_plural = _('Ratings')
+        abstract = True
 
     @property
     def key(self):
@@ -72,6 +58,27 @@ class Rating(models.Model):
     def __unicode__(self):
         """ Used to identify the object in admin forms. """
         return unicode(self.target)
+
+
+class Rating(BaseRating):
+    """
+    This holds the rating value for whichever key you assign.
+
+    Note, instead of using the database to compute the average, since we want to
+    work on Google App Engine, update the counters as an event is added.
+
+    Always use the following to get the Rating object:
+       rating, created = Rating.objects.get_or_create(target_ct=ct, target_id=obj_id)
+    """
+    total_rating = models.IntegerField(verbose_name=_('Total Rating Sum (computed)'), default=0)
+    total_votes = models.IntegerField(verbose_name=_('Total Votes (computed)'), default=0)
+    avg_rating = models.DecimalField(verbose_name=_('Average Rating (computed)'), default="0.0", max_digits=2, decimal_places=1)
+    percent = models.FloatField(verbose_name=_('Percent Fill (computed)'), default=0.0)
+
+    class Meta:
+        unique_together = (('target_ct', 'target_id'),)
+        verbose_name = _('Rating')
+        verbose_name_plural = _('Ratings')
 
     def add_rating(self, event):
         """
@@ -101,16 +108,12 @@ class Rating(models.Model):
         self.percent = float(self.avg_rating) / 5.0
 
 
-class RatingEvent(models.Model):
+class RatingEvent(BaseRating):
     """
     Each time someone votes, the vote will be recorded by ip address.
     Yes, this is not optimal for proxies, but good enough because if you
     are behind a proxy you should be working, and not rating stuff.
     """
-    target_ct = models.ForeignKey(ContentType, verbose_name=_('Target content type'))
-    target_id = models.IntegerField(_('Target ID'), db_index=True)
-    target = GenericForeignKey(ct_field="target_ct", fk_field="target_id")
-
     ip = models.IPAddressField(_('IP address'), null=True)
     user = models.ForeignKey(User, db_index=True, blank=True, null=True, verbose_name=_('User who has rated'))
     created = models.DateTimeField(_('Date of created'), auto_now_add=True)
@@ -137,10 +140,6 @@ class RatingEvent(models.Model):
 
         self.is_changing = False
 
-    def __unicode__(self):
-        """ Used to identify the object in admin forms. """
-        return unicode(self.target)
-
     @property
     def stars_value(self):
         """
@@ -166,9 +165,15 @@ def by_rating(self, extra_order_by_field_str=''):
         extra_order_by_field_str = target_id_field
     else:
         extra_order_by_field_str = "%s.%s" % (qn(opts.db_table), qn(extra_order_by_field_str))
+    rating_table = qn(Rating._meta.db_table)
     return self.extra(
-        tables=['rabidratings_rating'],
-        where=['rabidratings_rating.target_ct_id IN %s and rabidratings_rating.target_id = %s or rabidratings_rating.avg_rating IS NULL' % (str_cts, target_id_field)],
+        tables=['%s' % (rating_table,)],
+        where=['''%(rating_table)s.target_ct_id IN %(cts)s 
+                    and %(rating_table)s.target_id = %(target_id)s''' % {
+                                                                         'rating_table': rating_table,
+                                                                         'cts': str_cts,
+                                                                         'target_id': target_id_field,
+                                                                         }],
         params=[],
         order_by=['-rabidratings_rating.avg_rating', '%s' % extra_order_by_field_str]
     )

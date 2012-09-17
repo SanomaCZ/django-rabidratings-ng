@@ -26,11 +26,30 @@ var RabidRatings = function (options) {
 			snap: 1,         /* Will snap to the nearest star (can be made a decimal, too). */
 			verbalValues: {1: 'Very bad', 2: 'Bad', 3: 'Avarage', 4: 'Good', 5: 'Excellent'} /* verbal values for individual stars*/
 		},
-		
+
 		init: function() {
 			var activeColor = this.options.activeColor;
 			var votedColor  = this.options.votedColor;
 			var fillColor   = this.options.fillColor;
+			
+			$.each($('.rabidRatingStatistics'), $.proxy(function(index, elStatistics) {
+				if (($.browser.msie && $.browser.version=="6.0")) {
+					//Replaces all the fancy with a text description of the votes for IE6.
+					//If you want IE6 users to have something fancier to look at, add it here.
+					$('.ratingText', elStatistics).insertBefore(elStatistics);
+					$(elStatistics).remove();
+				}
+				else
+				{
+					elStatistics.id = $(elStatistics).attr('id');
+					elStatistics.fill = $('.ratingFill', elStatistics);
+					elStatistics.textEl = $('.ratingText', elStatistics);
+					elStatistics.totalVotes = $('.totalVotes', elStatistics.textEl);
+					elStatistics.ratingAvg = $('.ratingAvg', elStatistics.textEl);
+					elStatistics.starPercent = this.getStarPercentFromId(elStatistics.id);
+					this.fillVote(elStatistics.starPercent, elStatistics);
+				}
+			}, this));
 
 			$.each($('.rabidRatingUser'), $.proxy(function(index, el) {
 				if (($.browser.msie && $.browser.version=="6.0")) {
@@ -54,12 +73,14 @@ var RabidRatings = function (options) {
 					
 					// used for statistics part
 					elStatistics = $('.rabidRatingStatistics')[index]
-					elStatistics.fill = $('.ratingFill', elStatistics);
-					elStatistics.textEl = $('.ratingText', elStatistics);
-					elStatistics.totalVotes = $('.totalVotes', elStatistics.textEl);
-					elStatistics.ratingAvg = $('.ratingAvg', elStatistics.textEl);
-					elStatistics.starPercent = this.getStarPercentFromId(elStatistics.id);
-					this.fillVote(elStatistics.starPercent, elStatistics);
+					if (elStatistics) {
+						elStatistics.fill = $('.ratingFill', elStatistics);
+						elStatistics.textEl = $('.ratingText', elStatistics);
+						elStatistics.totalVotes = $('.totalVotes', elStatistics.textEl);
+						elStatistics.ratingAvg = $('.ratingAvg', elStatistics.textEl);
+						elStatistics.starPercent = this.getStarPercentFromId(elStatistics.id);
+						this.fillVote(elStatistics.starPercent, elStatistics);
+					}
 					// end used for statistics part
 					
 					el.currentFill = this.getFillPercent(el.starPercent);
@@ -125,10 +146,12 @@ var RabidRatings = function (options) {
 							$(el.textEl).removeClass('loading');
 							$(el.textEl).html(data.text);
 							// used for statistics part
-							$(elStatistics.totalVotes).html(data.total_votes);
-							$(elStatistics.ratingAvg).html(data.avg_rating);
-							var percent = this.computeStarPercent(data.avg_rating, this.options.scale)
-							this.fillVote(percent, elStatistics);
+							if (elStatistics) {
+								$(elStatistics.totalVotes).html(data.total_votes);
+								$(elStatistics.ratingAvg).html(data.avg_rating);
+								var percent = this.computeStarPercent(data.avg_rating, this.options.scale)
+								this.fillVote(percent, elStatistics);
+							}
 							// end used for statistics part 
 						}
 						else {
@@ -147,6 +170,7 @@ var RabidRatings = function (options) {
 							el.wrapper.mouseleave(el.mouseleave);
 							el.wrapper.click(el.click);
 							this.fillVote(el.starPercent, el);
+							if (elStatistics) this.fillVote(elStatistics.starPercent, elStatistics);
 						}, this));
 					}, this);
 				}

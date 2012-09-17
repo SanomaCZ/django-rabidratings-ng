@@ -27,7 +27,6 @@ from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_protect
 
 from rabidratings.utils import HttpResponseJson
-from rabidratings.managers import get_or_create
 from rabidratings.models import Rating, RatingEvent
 
 logger = logging.getLogger(__name__)
@@ -53,13 +52,13 @@ def record_vote(request):
         ct_id, obj_id = Rating.split_key(key)
         ct = ContentType.objects.get(id=ct_id)
 
-        rating = get_or_create(Rating, False, target_ct=ct, target_id=obj_id)[0]
+        rating = Rating.objects.get_or_create(False, target_ct=ct, target_id=obj_id)[0]
         # lookup for model RatingEvent
         lookup = dict(target_ct=ct, target_id=obj_id, ip=ip, user=None)
         if request.user and request.user.is_authenticated():
             lookup.update({'user': request.user})
             lookup.pop('ip', None)
-        event, newevent = get_or_create(RatingEvent, False, **lookup)
+        event, newevent = RatingEvent.objects.get_or_create(False, **lookup)
         if not newevent:
             event.is_changing = True
             event.old_value = event.value

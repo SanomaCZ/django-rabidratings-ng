@@ -1,3 +1,4 @@
+from django.db import models
 from django.db.models.related import RelatedObject
 
 from rabidratings.utils import import_module_member
@@ -27,6 +28,15 @@ def get_or_create(model, commit=True, **kwargs):
         if commit:
             obj.save()
     return (obj, created)
+
+
+class BaseRatingManager(models.Manager):
+
+    def get_or_create(self, commit=True, **kwargs):
+        return get_or_create(self.model, commit, **kwargs)
+
+    def get_object(self, *args, **kwargs):
+        return get_object(self.model, **kwargs)
 
 
 def _get_subclasses(model):
