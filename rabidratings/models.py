@@ -18,7 +18,7 @@
 #
 from decimal import Decimal
 
-from django.db import models
+from django.db import connection, models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db.models.query import QuerySet
@@ -26,6 +26,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 from rabidratings.managers import _get_subclasses
+
+qn = connection.ops.quote_name
 
 
 class Rating(models.Model):
@@ -155,17 +157,18 @@ class RatingEvent(models.Model):
 
 
 def by_rating(self, extra_order_by_field_str=''):
+    # TODO: use better way to get objects by rating (and maybe use left outer join)
     opts = self.model._meta
-    target_id_field = '%s.%s' % (opts.db_table, opts.pk.attname)
+    target_id_field = '%s.%s' % (qn(opts.db_table), qn(opts.pk.column))
 
     str_cts = "(%s)" % (", ".join([str(ContentType.objects.get_for_model(m).id) for m in _get_subclasses(self.model)]),)
     if not extra_order_by_field_str:
         extra_order_by_field_str = target_id_field
     else:
-        extra_order_by_field_str = "%s.%s" % (opts.db_table, extra_order_by_field_str)
+        extra_order_by_field_str = "%s.%s" % (qn(opts.db_table), qn(extra_order_by_field_str))
     return self.extra(
         tables=['rabidratings_rating'],
-        where=['rabidratings_rating.target_ct_id IN %s and rabidratings_rating.target_id = %s' % (str_cts, target_id_field)],
+        where=['rabidratings_rating.target_ct_id IN %s and rabidratings_rating.target_id = %s or rabidratings_rating.avg_rating IS NULL' % (str_cts, target_id_field)],
         params=[],
         order_by=['-rabidratings_rating.avg_rating', '%s' % extra_order_by_field_str]
     )
