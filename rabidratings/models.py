@@ -25,7 +25,7 @@ from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from rabidratings.utils import _get_subclasses
+from rabidratings.managers import _get_subclasses
 
 
 class Rating(models.Model):
@@ -109,7 +109,7 @@ class RatingEvent(models.Model):
     target_id = models.IntegerField(_('Target ID'), db_index=True)
     target = GenericForeignKey(ct_field="target_ct", fk_field="target_id")
 
-    ip = models.IPAddressField(_('IP address'))
+    ip = models.IPAddressField(_('IP address'), null=True)
     user = models.ForeignKey(User, db_index=True, blank=True, null=True, verbose_name=_('User who has rated'))
     created = models.DateTimeField(_('Date of created'), auto_now_add=True)
     updated = models.DateTimeField(_('Date of last updated'), auto_now=True)

@@ -19,8 +19,9 @@
 from django import template
 from django.contrib.contenttypes.models import ContentType
 
-from rabidratings.conf import RABIDRATINGS_MEDIA_URL
+from rabidratings.conf import RABIDRATINGS_STATIC_URL
 from rabidratings.models import Rating, RatingEvent
+from rabidratings.managers import get_or_create, get_object
 
 register = template.Library()
 
@@ -34,13 +35,14 @@ def show_rating(context, obj):
         raise ValueError('Missing request')
 
     ct = ContentType.objects.get_for_model(obj)
-    rating = Rating.objects.get_or_create(target_ct=ct, target_id=obj.id)[0]
+    rating = get_or_create(Rating, target_ct=ct, target_id=obj.id)[0]
     user_rating = 0
     try:
-        data = dict(target_ct=ct, target_id=obj.id, ip=request.META['REMOTE_ADDR'], user=None)
+        lookup = dict(target_ct=ct, target_id=obj.id, ip=request.META['REMOTE_ADDR'], user=None)
         if request.user.is_authenticated():
-            data.update({'user': request.user})
-        rating_event = RatingEvent.objects.get(**data)
+            lookup.update({'user': request.user})
+            lookup.pop('ip', None)
+        rating_event = get_object(RatingEvent, **lookup)
     except RatingEvent.DoesNotExist:
         pass
     else:
@@ -60,6 +62,6 @@ def show_rating(context, obj):
 def rating_header(context):
     """ Inserts necessary includes into the html. """
     return {
-            'rabidratings_media_url': RABIDRATINGS_MEDIA_URL,
+            'rabidratings_static_url': RABIDRATINGS_STATIC_URL,
             'verbal_values': RatingEvent.VERBAL_VALUES,
             }
