@@ -17,7 +17,6 @@
 # along with Django-Rabid-Ratings.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django import template
-from django.contrib.contenttypes.models import ContentType
 
 from rabidratings.conf import RABIDRATINGS_STATIC_URL
 from rabidratings.models import Rating, RatingEvent

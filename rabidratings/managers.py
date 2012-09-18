@@ -11,12 +11,16 @@ def get_object(model, **kwargs):
     Return object processed from settings load function if set
     or used get from default manager
     '''
-    modstr = RABIDRATINGS_GET_OBJECT_FUNC
-    if modstr:
-        obj = import_module_member(modstr)(model, **kwargs)
+    if RABIDRATINGS_GET_OBJECT_FUNC:
+        func = get_object.cache.get("get_obj_func", None)
+        if not func:
+            func = import_module_member(RABIDRATINGS_GET_OBJECT_FUNC)
+            get_object.cache["get_obj_func"] = func
+        obj = func(model, **kwargs)
     else:
         obj = model._default_manager.get(**kwargs)
     return obj
+get_object.cache = {}
 
 
 def get_or_create(model, commit=True, **kwargs):

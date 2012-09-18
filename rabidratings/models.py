@@ -19,6 +19,8 @@
 from decimal import Decimal
 
 from django.db import connection, models
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db.models.query import QuerySet
@@ -79,8 +81,8 @@ class Rating(BaseRating):
     Always use the following to get the Rating object:
        rating, created = Rating.objects.get_or_create(target_ct=ct, target_id=obj_id)
     """
-    total_rating = models.IntegerField(verbose_name=_('Total Rating Sum (computed)'), default=0)
-    total_votes = models.IntegerField(verbose_name=_('Total Votes (computed)'), default=0)
+    total_rating = models.PositiveIntegerField(verbose_name=_('Total Rating Sum (computed)'), default=0)
+    total_votes = models.PositiveIntegerField(verbose_name=_('Total Votes (computed)'), default=0)
     avg_rating = models.DecimalField(verbose_name=_('Average Rating (computed)'), default="0.0", max_digits=2, decimal_places=1)
     percent = models.FloatField(verbose_name=_('Percent Fill (computed)'), default=0.0)
 
@@ -88,6 +90,20 @@ class Rating(BaseRating):
         unique_together = (('target_ct', 'target_id'),)
         verbose_name = _('Rating')
         verbose_name_plural = _('Ratings')
+
+    def clean(self):
+        if self.avg_rating < Decimal("0.0"):
+                raise ValidationError(_("Average rating can not be negative"))
+        if self.percent < 0.0:
+                raise ValidationError(_("Percent can not be negative"))
+
+    def save(self, *args, **kwargs):
+        try:
+            self.clean()
+        except ValidationError, e:
+            raise IntegrityError(e.messages)
+
+        super(Rating, self).save(*args, **kwargs)
 
     def add_rating(self, event):
         """
@@ -125,7 +141,7 @@ class RatingEvent(BaseRating):
     """
     ip = models.IPAddressField(_('IP address'), null=True)
     user = models.ForeignKey(User, db_index=True, blank=True, null=True, verbose_name=_('User who has rated'))
-    value = models.IntegerField(_('Value'), default=0)
+    value = models.PositiveIntegerField(_('Value'), default=0)
 
     # verval values for model numerical value
     VERBAL_VALUES = {
@@ -146,6 +162,27 @@ class RatingEvent(BaseRating):
         super(RatingEvent, self).__init__(*args, **kwargs)
 
         self.is_changing = False
+
+    def clean(self):
+        lookup = dict(target_ct=self.target_ct, target_id=self.target_id, ip=self.ip, user=self.user)
+        if self.user:
+            lookup.update({'user': self.user})
+            lookup.pop('ip', None)
+        try:
+            obj = self.__class__.objects.get_object(**lookup)
+        except self.__class__.DoesNotExist:
+            pass
+        else:
+            if obj.pk != self.pk:
+                raise ValidationError(_("Rating event already exists"))
+
+    def save(self, *args, **kwargs):
+        try:
+            self.clean()
+        except ValidationError, e:
+            raise IntegrityError(e.messages)
+
+        super(RatingEvent, self).save(*args, **kwargs)
 
     @property
     def stars_value(self):
