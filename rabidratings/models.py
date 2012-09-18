@@ -22,9 +22,15 @@ from django.db import connection, models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db.models.query import QuerySet
+from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
+from rabidratings.conf import (
+                               RABIDRATINGS_ENABLE_CREATE_RATING_ON_SIGNAL,
+                               RABIDRATINGS_CTS_FOR_CREATE_RATING,
+                               )
+from rabidratings.utils import get_natural_key
 from rabidratings.managers import _get_subclasses, BaseRatingManager
 
 qn = connection.ops.quote_name
@@ -34,6 +40,9 @@ class BaseRating(models.Model):
     target_ct = models.ForeignKey(ContentType, verbose_name=_('Target content type'))
     target_id = models.IntegerField(_('Target ID'), db_index=True)
     target = GenericForeignKey(ct_field="target_ct", fk_field="target_id")
+
+    created = models.DateTimeField(_('Date of created'), auto_now_add=True)
+    updated = models.DateTimeField(_('Date of last updated'), auto_now=True)
 
     objects = BaseRatingManager()
 
@@ -116,8 +125,6 @@ class RatingEvent(BaseRating):
     """
     ip = models.IPAddressField(_('IP address'), null=True)
     user = models.ForeignKey(User, db_index=True, blank=True, null=True, verbose_name=_('User who has rated'))
-    created = models.DateTimeField(_('Date of created'), auto_now_add=True)
-    updated = models.DateTimeField(_('Date of last updated'), auto_now=True)
     value = models.IntegerField(_('Value'), default=0)
 
     # verval values for model numerical value
@@ -179,3 +186,18 @@ def by_rating(self, extra_order_by_field_str=''):
     )
 
 QuerySet.by_rating = by_rating
+
+
+def create_rating_for_cts(sender, **kwargs):
+    '''
+    Create ratings for creating objects
+    whose models are spec in RABIDRATINGS_CTS_FOR_CREATE_RATING
+    '''
+    if (get_natural_key(sender) in RABIDRATINGS_CTS_FOR_CREATE_RATING
+        and kwargs.get('created', False) and not kwargs.get('raw', False)):
+        instance = kwargs['instance']
+        ct = ContentType.objects.get_for_model(sender)
+        Rating.objects.get_or_create(target_ct=ct, target_id=instance.id)
+
+if RABIDRATINGS_ENABLE_CREATE_RATING_ON_SIGNAL:
+    signals.post_save.connect(create_rating_for_cts)

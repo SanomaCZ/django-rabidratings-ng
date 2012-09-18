@@ -12,3 +12,8 @@ def import_module_member(modstr):
         raise ImproperlyConfigured('Error importing %s: "%s"' % (modstr, e))
     else:
         return member
+
+
+def get_natural_key(model_class):
+    app_label = model_class._meta.app_label
+    return '%s.%s' % (app_label, model_class.__name__.lower())

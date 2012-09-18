@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-17 11:28+0200\n"
+"POT-Creation-Date: 2012-09-18 10:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,83 +18,83 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2\n"
 
-#: models.py:43 models.py:110
+#: models.py:40
 msgid "Target content type"
 msgstr "Typ obsahu cíle"
 
-#: models.py:44 models.py:111
+#: models.py:41
 msgid "Target ID"
 msgstr "Id cíle"
 
-#: models.py:47
-msgid "Total Rating Sum (computed)"
-msgstr "Celkové hodnocení (vypočítané)"
-
-#: models.py:48
-msgid "Total Votes (computed)"
-msgstr "Celkový počet hlasů (vypočítaný)"
-
-#: models.py:49
-msgid "Průměrné hodnocení (vypočítané)"
-msgstr ""
-
-#: models.py:50
-msgid "Percent Fill (computed)"
-msgstr "Vyplněná procenta (vypočítané)"
-
-#: models.py:54 templates/rabidratings/rating.html:17
-msgid "Rating"
-msgstr "Hodnocení"
-
-#: models.py:55
-msgid "Ratings"
-msgstr "Hodnocení"
-
-#: models.py:114
-msgid "IP address"
-msgstr "IP adresa"
-
-#: models.py:115
-msgid "User who has rated"
-msgstr "Hodnotitel"
-
-#: models.py:116
+#: models.py:44
 msgid "Date of created"
 msgstr "Datum vytvoření"
 
-#: models.py:117
+#: models.py:45
 msgid "Date of last updated"
 msgstr "Datum poslední úpravy"
 
-#: models.py:118
+#: models.py:82
+msgid "Total Rating Sum (computed)"
+msgstr "Celkové hodnocení (vypočítané)"
+
+#: models.py:83
+msgid "Total Votes (computed)"
+msgstr "Celkový počet hlasů (vypočítaný)"
+
+#: models.py:84
+msgid "Average Rating (computed)"
+msgstr "Průměrné hodnocení (vypočítané)"
+
+#: models.py:85
+msgid "Percent Fill (computed)"
+msgstr "Vyplněná procenta (vypočítané)"
+
+#: models.py:89 templates/rabidratings/rating.html:19
+msgid "Rating"
+msgstr "Hodnocení"
+
+#: models.py:90
+msgid "Ratings"
+msgstr "Hodnocení"
+
+#: models.py:126
+msgid "IP address"
+msgstr "IP adresa"
+
+#: models.py:127
+msgid "User who has rated"
+msgstr "Hodnotitel"
+
+#: models.py:128
 msgid "Value"
 msgstr "Hodnota"
 
-#: models.py:122
+#: models.py:132
 msgid "Very bad"
 msgstr "Velmi špatné"
 
-#: models.py:123
+#: models.py:133
 msgid "Not much"
 msgstr "Nic moc"
 
-#: models.py:124
+#: models.py:134
 msgid "Average"
 msgstr "Průměrné"
 
-#: models.py:125
+#: models.py:135
 msgid "Good"
 msgstr "Dobré"
 
-#: models.py:126
+#: models.py:136
 msgid "Excellent"
 msgstr "Vynikající"
 
-#: models.py:131
+#: models.py:141
 msgid "Rating event"
 msgstr "Událost hodnocení"
 
-#: models.py:132
+#: models.py:142
 msgid "Rating events"
 msgstr "Události hodnocení"
 
@@ -102,22 +102,26 @@ msgstr "Události hodnocení"
 msgid "submit"
 msgstr "potvrzení"
 
-#: views.py:80
+#: views.py:79
 msgid "I can not save your rating, please try again later"
 msgstr "Nemohu uložit vaše hodnocení, prosím zkuste to později"
 
-#: templates/rabidratings/rating.html:4
+#: templates/rabidratings/rating.html:5
 #: templates/rabidratings/rating_result_text.html:3
 msgid "Rating from you"
 msgstr "Vaše hodnocení"
 
-#: templates/rabidratings/rating.html:4
+#: templates/rabidratings/rating.html:5
 msgid "You have not yet rated"
 msgstr "Ještě jste nehodnotil"
 
-#: templates/rabidratings/rating.html:17
+#: templates/rabidratings/rating.html:19
 msgid "by users"
 msgstr "uživateli"
+
+#: templates/rabidratings/rating.html:19
+msgid "not yet rated"
+msgstr "zatím nehodnoceno"
 
 #: templates/rabidratings/rating_result_text.html:4
 msgid "You can change the view"

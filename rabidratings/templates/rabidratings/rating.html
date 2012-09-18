@@ -16,7 +16,7 @@
 {% if show_parts == 'statistics' or show_parts == 'all' %}
 	<div id="rabidRatingStatistics-{{ rating_key }}-{{ rating }}_{{ max_stars }}" class="rabidRatingStatistics">
 	    <div id="rabidRatingStatistics-{{ rating_key }}-description" class="ratingText">
-	        <p>{% trans "Rating" %} (<strong class="totalVotes">{{ total_votes }}</strong> {% trans "by users" %}): <strong class="ratingAvg">{{ rating }}</strong></p>
+	        <p>{% trans "Rating" %} (<strong class="totalVotes">{{ total_votes }}</strong> {% trans "by users" %}): <strong class="ratingAvg">{% if rating %}{{ rating }}{% else %}{% trans "not yet rated" %}{% endif %}</strong></p>
 	    </div>
 	    <div class="wrapper">
 				<span class="ratingFill" style="width:{{ percent }}%;">
