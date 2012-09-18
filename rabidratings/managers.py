@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models.related import RelatedObject
+from django.contrib.contenttypes.models import ContentType
 
 from rabidratings.utils import import_module_member
 from rabidratings.conf import RABIDRATINGS_GET_OBJECT_FUNC
@@ -37,6 +38,16 @@ class BaseRatingManager(models.Manager):
 
     def get_object(self, *args, **kwargs):
         return get_object(self.model, **kwargs)
+
+    def get_for_object(self, obj, create_if_not=True, **kwargs):
+        ct = ContentType.objects.get_for_model(obj.__class__)
+        kwargs.update({
+                       'target_ct': ct,
+                       'target_id': obj.id,
+                       })
+        if create_if_not:
+            return self.get_or_create(**kwargs)[0]
+        return self.get_object(**kwargs)
 
 
 def _get_subclasses(model):

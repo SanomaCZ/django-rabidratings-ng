@@ -15,3 +15,5 @@ RABIDRATINGS_ENABLE_CREATE_RATING_ON_SIGNAL = getattr(settings, 'RABIDRATINGS_EN
 # Spec models in natural key form for models you want created rating by post save signal
 # this is used in management command for creating ratings for exist objects too
 RABIDRATINGS_CTS_FOR_CREATE_RATING = getattr(settings, 'RABIDRATINGS_CTS_FOR_CREATE_RATING', ())
+
+RABIDRATINGS_TIME_DELETE_OLD_RATINGS = getattr(settings, 'RABIDRATINGS_TIME_DELETE_OLD_RATINGS', 60 * 60 * 24 * 365)

@@ -162,16 +162,12 @@ class RatingEvent(BaseRating):
         return self.VERBAL_VALUES.get(self.value, '')
 
 
-def by_rating(self, extra_order_by_field_str=''):
+def by_rating(self):
     # TODO: use better way to get objects by rating (and maybe use left outer join)
     opts = self.model._meta
     target_id_field = '%s.%s' % (qn(opts.db_table), qn(opts.pk.column))
 
     str_cts = "(%s)" % (", ".join([str(ContentType.objects.get_for_model(m).id) for m in _get_subclasses(self.model)]),)
-    if not extra_order_by_field_str:
-        extra_order_by_field_str = target_id_field
-    else:
-        extra_order_by_field_str = "%s.%s" % (qn(opts.db_table), qn(extra_order_by_field_str))
     rating_table = qn(Rating._meta.db_table)
     return self.extra(
         tables=['%s' % (rating_table,)],
@@ -182,7 +178,7 @@ def by_rating(self, extra_order_by_field_str=''):
                                                                          'target_id': target_id_field,
                                                                          }],
         params=[],
-        order_by=['-rabidratings_rating.avg_rating', '%s' % extra_order_by_field_str]
+        order_by=['-%s.avg_rating' % (rating_table)]
     )
 
 QuerySet.by_rating = by_rating

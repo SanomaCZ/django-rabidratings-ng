@@ -33,15 +33,14 @@ def show_rating(context, obj, show_parts='all'):
     if not request:
         raise ValueError('Missing request')
 
-    ct = ContentType.objects.get_for_model(obj)
-    rating = Rating.objects.get_or_create(target_ct=ct, target_id=obj.id)[0]
+    rating = Rating.objects.get_for_object(obj)
     user_rating = 0
     try:
-        lookup = dict(target_ct=ct, target_id=obj.id, ip=request.META['REMOTE_ADDR'], user=None)
+        lookup = dict(ip=request.META['REMOTE_ADDR'], user=None)
         if request.user.is_authenticated():
             lookup.update({'user': request.user})
             lookup.pop('ip', None)
-        rating_event = RatingEvent.objects.get_object(**lookup)
+        rating_event = RatingEvent.objects.get_for_object(obj, False, **lookup)
     except RatingEvent.DoesNotExist:
         pass
     else:
