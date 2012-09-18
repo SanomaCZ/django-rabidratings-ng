@@ -163,12 +163,17 @@ class RatingEvent(BaseRating):
 
 
 def by_rating(self):
+    '''
+    Added order by rating to queryset for using in target API
+    '''
     # TODO: use better way to get objects by rating (and maybe use left outer join)
     opts = self.model._meta
     target_id_field = '%s.%s' % (qn(opts.db_table), qn(opts.pk.column))
 
     str_cts = "(%s)" % (", ".join([str(ContentType.objects.get_for_model(m).id) for m in _get_subclasses(self.model)]),)
     rating_table = qn(Rating._meta.db_table)
+    order_by = ['-%s.avg_rating' % (rating_table)]
+    order_by.extend(self.query.order_by[:])
     return self.extra(
         tables=['%s' % (rating_table,)],
         where=['''%(rating_table)s.target_ct_id IN %(cts)s 
@@ -178,7 +183,7 @@ def by_rating(self):
                                                                          'target_id': target_id_field,
                                                                          }],
         params=[],
-        order_by=['-%s.avg_rating' % (rating_table)]
+        order_by=order_by
     )
 
 QuerySet.by_rating = by_rating
