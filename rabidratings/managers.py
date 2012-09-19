@@ -1,4 +1,6 @@
-from django.db import models
+import sys
+
+from django.db import models, transaction, IntegrityError
 from django.db.models.related import RelatedObject
 from django.contrib.contenttypes.models import ContentType
 
@@ -24,15 +26,34 @@ get_object.cache = {}
 
 
 def get_or_create(model, commit=True, **kwargs):
-    created = False
+    assert kwargs, \
+                'get_or_create() must be passed at least one keyword argument'
+    defaults = kwargs.pop('defaults', {})
+    lookup = kwargs.copy()
+    for f in model._meta.fields:
+        if f.attname in lookup:
+            lookup[f.name] = lookup.pop(f.attname)
     try:
-        obj = get_object(model, **kwargs)
+        return get_object(model, **lookup), False
     except model.DoesNotExist:
-        obj = model(**kwargs)
-        created = True
-        if commit:
-            obj.save()
-    return (obj, created)
+        try:
+            params = dict([(k, v) for k, v in kwargs.items() if '__' not in k])
+            params.update(defaults)
+            obj = model(**params)
+            if commit:
+                sid = transaction.savepoint()
+                obj.save(force_insert=True)
+                transaction.savepoint_commit(sid)
+            return obj, True
+        except IntegrityError:
+            if commit:
+                transaction.savepoint_rollback(sid)
+            exc_info = sys.exc_info()
+            try:
+                return get_object(model, **lookup), False
+            except model.DoesNotExist:
+                # Re-raise the IntegrityError with its original traceback.
+                raise exc_info[1], None, exc_info[2]
 
 
 class BaseRatingManager(models.Manager):
