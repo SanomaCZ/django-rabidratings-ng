@@ -149,7 +149,7 @@ var RabidRatings = function (options) {
 							if (elStatistics) {
 								$(elStatistics.totalVotes).html(data.total_votes);
 								$(elStatistics.ratingAvg).html(data.avg_rating);
-								var percent = this.computeStarPercent(data.avg_rating, this.options.scale)
+								var percent = this.computeStarPercent(data.avg_rating.replace(",", "."), this.options.scale)
 								this.fillVote(percent, elStatistics);
 							}
 							// end used for statistics part 

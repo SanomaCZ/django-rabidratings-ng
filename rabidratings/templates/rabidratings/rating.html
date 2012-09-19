@@ -1,7 +1,7 @@
 {% load i18n %}
 {% if show_parts == 'user' or show_parts == 'all' %}
 	<div id="rabidRatingUser-{{ rating_key }}-{{ user_rating }}_{{ max_stars }}" class="rabidRatingUser">
-	    <div id="rabidRating-{{ rating_key }}-description" class="ratingText">
+	    <div id="rabidRatingUser-{{ rating_key }}-description" class="ratingText">
 	        {% trans "Rating from you" %}: {% if user_rating %}{{ user_rating }}{% else %}{% trans "You have not yet rated" %}{% endif %}
 	    </div>
 	    <div class="wrapper">
@@ -14,7 +14,7 @@
 	</div>
 {% endif %}
 {% if show_parts == 'statistics' or show_parts == 'all' %}
-	<div id="rabidRatingStatistics-{{ rating_key }}-{{ rating }}_{{ max_stars }}" class="rabidRatingStatistics">
+	<div id="rabidRatingStatistics-{{ rating_key }}-{{ rating|stringformat:"s" }}_{{ max_stars }}" class="rabidRatingStatistics">
 	    <div id="rabidRatingStatistics-{{ rating_key }}-description" class="ratingText">
 	        <p>{% trans "Rating" %} (<strong class="totalVotes">{{ total_votes }}</strong> {% trans "by users" %}): <strong class="ratingAvg">{% if rating %}{{ rating }}{% else %}{% trans "not yet rated" %}{% endif %}</strong></p>
 	    </div>

@@ -70,7 +70,8 @@ def record_vote(request):
         result_text = render_to_string('rabidratings/rating_result_text.html', {'event': event})
         result['code'] = 200
         result['text'] = result_text
-        result['avg_rating'] = str(rating.avg_rating)
+        result['avg_rating'] = render_to_string('rabidratings/avg_rating_vaule.html',
+                                                {'value': rating.avg_rating})
         result['total_votes'] = rating.total_votes
     except Exception as e:
         transaction.rollback()
