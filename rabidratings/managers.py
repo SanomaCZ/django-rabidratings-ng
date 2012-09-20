@@ -75,6 +75,15 @@ class BaseRatingManager(models.Manager):
         return self.get_object(**kwargs)
 
 
+class RatingEventManager(BaseRatingManager):
+
+    def get(self, *args, **kwargs):
+        event = super(RatingEventManager, self).get(*args, **kwargs)
+        event.is_changing = True
+        event.old_value = event.value
+        return event
+
+
 def _get_subclasses(model):
     subclasses = [model]
     for f in model._meta.get_all_field_names():

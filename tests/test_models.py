@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-from datetime import date, timedelta
+#from datetime import date, timedelta
 from decimal import Decimal
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-from django.core.cache import cache
+#from django.core.cache import cache
 from django.test import TestCase
-from django.core.exceptions import ValidationError
+#from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from django import VERSION as DJANGO_VERSION
+#from django import VERSION as DJANGO_VERSION
 
-from nose import tools, SkipTest
+from nose import tools
 
 from rabidratings.models import Rating, RatingEvent
 
@@ -22,6 +22,43 @@ class TestRatingModel(TestCase):
         self.user = User.objects.create_user(username='johan')
         self.test_obj1 = User.objects.create_user(username='test_obj1')
         self.test_obj2 = User.objects.create_user(username='test_obj2')
+
+    def test_rating_update_by_ratingevent_for_same_obj(self):
+        ct = ContentType.objects.get_for_model(self.test_obj2.__class__)
+        lookup = dict(target_ct=ct, target_id=self.test_obj2.id, ip='127.0.0.1', user=None)
+        rating = Rating.objects.get_for_object(self.test_obj2)
+        rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
+        rating_event.value = 80
+        rating_event.save()
+        rating.add_rating(rating_event)
+        tools.assert_equals(rating.total_votes, 1)
+        tools.assert_equals(rating.avg_rating, Decimal('4.0'))
+        rating = Rating.objects.get_for_object(self.test_obj2)
+        rating_event.value = 40
+        rating_event.save()
+        rating.save()
+        rating.add_rating(rating_event)
+        tools.assert_equals(rating.total_votes, 1)
+        tools.assert_equals(rating.avg_rating, Decimal('2.0'))
+
+    def test_rating_update_by_ratingevent_for_diff_obj(self):
+        ct = ContentType.objects.get_for_model(self.test_obj2.__class__)
+        lookup = dict(target_ct=ct, target_id=self.test_obj2.id, ip='127.0.0.1', user=None)
+        rating = Rating.objects.get_for_object(self.test_obj2)
+        rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
+        rating_event.value = 80
+        rating_event.save()
+        rating.add_rating(rating_event)
+        tools.assert_equals(rating.total_votes, 1)
+        tools.assert_equals(rating.avg_rating, Decimal('4.0'))
+        lookup = dict(target_ct=ct, target_id=self.test_obj1.id, ip='127.0.0.1', user=None)
+        rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
+        rating_event.value = 40
+        rating_event.save()
+        rating.save()
+        rating.add_rating(rating_event)
+        tools.assert_equals(rating.total_votes, 2)
+        tools.assert_equals(rating.avg_rating, Decimal('3.0'))
 
     def test_rating_raise_integration_error_if_percent_is_negative(self):
         rating = Rating.objects.get_for_object(self.test_obj2)

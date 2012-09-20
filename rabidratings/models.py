@@ -33,7 +33,11 @@ from rabidratings.conf import (
                                RABIDRATINGS_CTS_FOR_CREATE_RATING,
                                )
 from rabidratings.utils import get_natural_key
-from rabidratings.managers import _get_subclasses, BaseRatingManager
+from rabidratings.managers import (
+                                   _get_subclasses,
+                                   BaseRatingManager,
+                                   RatingEventManager
+                                   )
 
 qn = connection.ops.quote_name
 
@@ -142,6 +146,8 @@ class RatingEvent(BaseRating):
     ip = models.IPAddressField(_('IP address'), null=True)
     user = models.ForeignKey(User, db_index=True, blank=True, null=True, verbose_name=_('User who has rated'))
     value = models.PositiveIntegerField(_('Value'), default=0)
+
+    objects = RatingEventManager()
 
     # verval values for model numerical value
     VERBAL_VALUES = {

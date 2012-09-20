@@ -58,11 +58,8 @@ def record_vote(request):
         if request.user and request.user.is_authenticated():
             lookup.update({'user': request.user})
             lookup.pop('ip', None)
-        event, newevent = RatingEvent.objects.get_or_create(False, **lookup)
-        if not newevent:
-            event.is_changing = True
-            event.old_value = event.value
 
+        event = RatingEvent.objects.get_or_create(False, **lookup)[0]
         event.value = int(float(request.POST['vote']))
         rating.add_rating(event)
         rating.save()
