@@ -46,7 +46,7 @@ def record_vote(request):
     logger.debug(request)
     try:
         ct_id, obj_id = Rating.split_key(request.POST['id'])
-        ct = ContentType.objects.get(id=ct_id)
+        ct = ContentType.objects.get_for_id(ct_id)
 
         # lookup for model RatingEvent
         lookup = dict(target_ct=ct, target_id=obj_id)

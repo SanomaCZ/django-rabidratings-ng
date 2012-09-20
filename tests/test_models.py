@@ -15,43 +15,57 @@ class TestRatingModel(TestCase):
     def setUp(self):
         super(TestRatingModel, self).setUp()
         self.user = User.objects.create_user(username='johan')
+        self.user2 = User.objects.create_user(username='joe')
         self.test_obj1 = User.objects.create_user(username='test_obj1')
         self.test_obj2 = User.objects.create_user(username='test_obj2')
 
     def test_rating_update_by_ratingevent_for_same_obj(self):
         ct = ContentType.objects.get_for_model(self.test_obj2.__class__)
-        lookup = dict(target_ct=ct, target_id=self.test_obj2.id, ip='127.0.0.1', user=None)
-        rating = Rating.objects.get_for_object(self.test_obj2)
+        lookup = dict(target_ct=ct, target_id=self.test_obj2.id, user=self.user)
         rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
         rating_event.value = 80
         rating_event.save()
-        rating.add_rating(rating_event)
+        rating = Rating.objects.get_for_object(self.test_obj2)
         tools.assert_equals(rating.total_votes, 1)
         tools.assert_equals(rating.avg_rating, Decimal('4.0'))
-        rating = Rating.objects.get_for_object(self.test_obj2)
+        rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
         rating_event.value = 40
         rating_event.save()
-        rating.save()
-        rating.add_rating(rating_event)
+        rating = Rating.objects.get_for_object(self.test_obj2)
         tools.assert_equals(rating.total_votes, 1)
         tools.assert_equals(rating.avg_rating, Decimal('2.0'))
 
     def test_rating_update_by_ratingevent_for_diff_obj(self):
         ct = ContentType.objects.get_for_model(self.test_obj2.__class__)
-        lookup = dict(target_ct=ct, target_id=self.test_obj2.id, ip='127.0.0.1', user=None)
-        rating = Rating.objects.get_for_object(self.test_obj2)
+        lookup = dict(target_ct=ct, target_id=self.test_obj2.id, user=self.user)
         rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
         rating_event.value = 80
         rating_event.save()
-        rating.add_rating(rating_event)
+        rating = Rating.objects.get_for_object(self.test_obj2)
         tools.assert_equals(rating.total_votes, 1)
         tools.assert_equals(rating.avg_rating, Decimal('4.0'))
-        lookup = dict(target_ct=ct, target_id=self.test_obj1.id, ip='127.0.0.1', user=None)
+        lookup = dict(target_ct=ct, target_id=self.test_obj1.id, user=self.user)
         rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
         rating_event.value = 40
         rating_event.save()
-        rating.save()
-        rating.add_rating(rating_event)
+        rating = Rating.objects.get_for_object(self.test_obj1)
+        tools.assert_equals(rating.total_votes, 1)
+        tools.assert_equals(rating.avg_rating, Decimal('2.0'))
+
+    def test_rating_update_by_ratingevent_for_diff_users_same_obj(self):
+        ct = ContentType.objects.get_for_model(self.test_obj2.__class__)
+        lookup = dict(target_ct=ct, target_id=self.test_obj2.id, user=self.user)
+        rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
+        rating_event.value = 80
+        rating_event.save()
+        rating = Rating.objects.get_for_object(self.test_obj2)
+        tools.assert_equals(rating.total_votes, 1)
+        tools.assert_equals(rating.avg_rating, Decimal('4.0'))
+        lookup = dict(target_ct=ct, target_id=self.test_obj2.id, user=self.user2)
+        rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
+        rating_event.value = 40
+        rating_event.save()
+        rating = Rating.objects.get_for_object(self.test_obj2)
         tools.assert_equals(rating.total_votes, 2)
         tools.assert_equals(rating.avg_rating, Decimal('3.0'))
 
@@ -84,48 +98,30 @@ class TestRatingEventModel(TestCase):
         self.test_obj1 = User.objects.create_user(username='test_obj1')
         self.test_obj2 = User.objects.create_user(username='test_obj2')
         self.content_type_user = ContentType.objects.get_for_model(self.test_obj1.__class__)
-        self.lookup = dict(target_ct=self.content_type_user, target_id=self.test_obj1.id, ip='127.0.0.1', user=None)
+        self.lookup = dict(target_ct=self.content_type_user, target_id=self.test_obj1.id, user=self.user1)
 
     def test_get_ratingevent_for_obj_created_if_not(self):
-        ratingevent = RatingEvent.objects.get_for_object(self.test_obj2)
-        tools.assert_equals(ratingevent.target, self.test_obj2)
+        ratingevent = RatingEvent.objects.get_for_object(self.test_obj1, user=self.user1)
+        tools.assert_equals(ratingevent.target, self.test_obj1)
         tools.assert_equals(RatingEvent.objects.count(), 1)
 
     def test_get_ratingevent_for_obj(self):
-        tools.assert_raises(RatingEvent.DoesNotExist, RatingEvent.objects.get_for_object, self.test_obj2, False)
+        tools.assert_raises(RatingEvent.DoesNotExist, lambda: RatingEvent.objects.get_for_object(self.test_obj2, False, user=self.user1))
         tools.assert_equals(RatingEvent.objects.count(), 0)
 
-    def test_ratingevent_unique_on_same_obj_for_anonymous_users_with_same_ip(self):
-        RatingEvent.objects.create(**self.lookup)
-        tools.assert_equals(RatingEvent.objects.count(), 1)
-        tools.assert_raises(IntegrityError, lambda: RatingEvent.objects.create(**self.lookup))
-
-    def test_ratingevent_not_unique_on_same_obj_for_anonymous_users_with_diff_ip(self):
-        RatingEvent.objects.create(**self.lookup)
-        tools.assert_equals(RatingEvent.objects.count(), 1)
+    def test_ratingevent_throw_excpetion_if_user_is_none(self):
         lookup = self.lookup.copy()
-        lookup.update({'ip': '192.168.2.1'})
-        RatingEvent.objects.create(**lookup)
-        tools.assert_equals(RatingEvent.objects.count(), 2)
-
-    def test_ratingevent_not_unique_on_diff_objects_for_anonymous_users_with_same_ip(self):
-        RatingEvent.objects.create(**self.lookup)
-        tools.assert_equals(RatingEvent.objects.count(), 1)
-        lookup = self.lookup.copy()
-        lookup.update({'target_id': self.test_obj2.id})
-        RatingEvent.objects.create(**lookup)
-        tools.assert_equals(RatingEvent.objects.count(), 2)
+        lookup.update({'user': None})
+        tools.assert_raises(IntegrityError, lambda: RatingEvent.objects.create(**lookup))
 
     def test_ratingevent_unique_on_same_obj_for_user(self):
         lookup = self.lookup.copy()
-        lookup.update({'user': self.user1})
         RatingEvent.objects.create(**lookup)
         tools.assert_equals(RatingEvent.objects.count(), 1)
         tools.assert_raises(IntegrityError, lambda: RatingEvent.objects.create(**lookup))
 
     def test_ratingevent_not_unique_on_same_obj_for_diff_users(self):
         lookup = self.lookup.copy()
-        lookup.update({'user': self.user1})
         RatingEvent.objects.create(**lookup)
         tools.assert_equals(RatingEvent.objects.count(), 1)
         lookup.update({'user': self.user2})
@@ -134,7 +130,6 @@ class TestRatingEventModel(TestCase):
 
     def test_ratingevent_not_unique_on_diff_objects_for_user(self):
         lookup = self.lookup.copy()
-        lookup.update({'user': self.user1})
         RatingEvent.objects.create(**lookup)
         tools.assert_equals(RatingEvent.objects.count(), 1)
         lookup.update({'target_id': self.test_obj2.id})
@@ -142,11 +137,11 @@ class TestRatingEventModel(TestCase):
         tools.assert_equals(RatingEvent.objects.count(), 2)
 
     def test_ratingevent_stars_value(self):
-        ratingevent = RatingEvent.objects.get_for_object(self.test_obj2)
+        ratingevent = RatingEvent.objects.get_or_create(**self.lookup)[0]
         ratingevent.value = 80
         tools.assert_equals(ratingevent.stars_value, 4)
 
     def test_ratingevent_verbal_value_out_of(self):
-        ratingevent = RatingEvent.objects.get_for_object(self.test_obj2)
+        ratingevent = RatingEvent.objects.get_or_create(**self.lookup)[0]
         ratingevent.value = 30
         tools.assert_equals(ratingevent.verbal_value, '')
