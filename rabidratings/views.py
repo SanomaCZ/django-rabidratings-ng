@@ -50,7 +50,7 @@ def record_vote(request):
         key = request.POST['id']
         ip = request.META['REMOTE_ADDR']
         ct_id, obj_id = Rating.split_key(key)
-        ct = ContentType.objects.get(id=ct_id)
+        ct = ContentType.objects.get_for_id(ct_id)
 
         # lookup for model RatingEvent
         lookup = dict(target_ct=ct, target_id=obj_id, ip=ip, user=None)
