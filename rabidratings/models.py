@@ -38,7 +38,6 @@ from rabidratings.utils import get_natural_key
 from rabidratings.managers import (
                                    _get_subclasses,
                                    BaseRatingManager,
-                                   RatingEventManager
                                    )
 
 qn = connection.ops.quote_name
@@ -156,8 +155,6 @@ class RatingEvent(BaseRating):
     user = models.ForeignKey(User, db_index=True, blank=True, null=True, verbose_name=_('User who has rated'))
     value = models.PositiveIntegerField(_('Value'), default=0)
 
-    objects = RatingEventManager()
-
     class Meta:
         unique_together = (('target_ct', 'target_id', 'user',))
         verbose_name = _('Rating event')
@@ -181,9 +178,18 @@ class RatingEvent(BaseRating):
 
         if self.value > 0:
             rating, created = Rating.objects.get_or_create(False, target_ct=self.target_ct, target_id=self.target_id)
+            if self.pk and getattr(self, 'old_value', 0) > 0:
+                self.is_changing = True
             rating.add_rating(self)
+            if self.pk and getattr(self, 'old_value', 0) > 0:
+                self.is_changing = False
             rating.save()
         super(RatingEvent, self).save(*args, **kwargs)
+
+    def __setattr__(self, name, value):
+        if name == "value" and hasattr(self, 'value'):
+            self.old_value = getattr(self, 'value')
+        super(RatingEvent, self).__setattr__(name, value)
 
     @property
     def stars_value(self):
