@@ -1,17 +1,21 @@
 {% load i18n %}
 {% if show_parts == 'user' or show_parts == 'all' %}
-	<div id="rabidRatingUser-{{ rating_key }}-{{ user_rating }}_{{ max_stars }}" class="rabidRatingUser">
-	    <div id="rabidRatingUser-{{ rating_key }}-description" class="ratingText">
-	        {% trans "Rating from you" %}: {% if user_rating %}{{ user_rating }}{% else %}{% trans "You have not yet rated" %}{% endif %}
-	    </div>
-	    <div class="wrapper">
-		    	<div id="rabidratings_csrf">{% csrf_token %}</div>
-				<span class="ratingFill" style="width:{{ percent }}%;">
-					<span class="ratingStars">
+	{% if user.is_authenticated %}
+		<div id="rabidRatingUser-{{ rating_key }}-{{ user_rating }}_{{ max_stars }}" class="rabidRatingUser">
+		    <div id="rabidRatingUser-{{ rating_key }}-description" class="ratingText">
+		        {% trans "Rating from you" %}: {% if user_rating %}{{ user_rating }}{% else %}{% trans "You have not yet rated" %}{% endif %}
+		    </div>
+		    <div class="wrapper">
+			    	<div id="rabidratings_csrf">{% csrf_token %}</div>
+					<span class="ratingFill" style="width:{{ percent }}%;">
+						<span class="ratingStars">
+						</span>
 					</span>
-				</span>
-	    </div>
-	</div>
+		    </div>
+		</div>
+	{% else %}
+		<p>{% trans "If you want rating, you have to be logged in" %}</p>
+	{% endif %}
 {% endif %}
 {% if show_parts == 'statistics' or show_parts == 'all' %}
 	<div id="rabidRatingStatistics-{{ rating_key }}-{{ rating|stringformat:"s" }}_{{ max_stars }}" class="rabidRatingStatistics">

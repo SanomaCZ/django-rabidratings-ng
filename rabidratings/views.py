@@ -17,7 +17,6 @@
 #
 import logging
 
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.transaction import commit_manually
@@ -27,6 +26,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from rabidratings.utils import HttpResponseJson
 from rabidratings.models import Rating, RatingEvent
+
 
 logger = logging.getLogger(__name__)
 
@@ -44,36 +44,35 @@ def record_vote(request):
        alter table rabidratings_rating engine=innodb;
     """
     logger.debug(request)
-    result = dict()
     try:
-        key = request.POST['id']
-        ip = request.META['REMOTE_ADDR']
-        ct_id, obj_id = Rating.split_key(key)
+        ct_id, obj_id = Rating.split_key(request.POST['id'])
         ct = ContentType.objects.get(id=ct_id)
 
-        rating, created = Rating.objects.get_or_create(False, target_ct=ct, target_id=obj_id)
         # lookup for model RatingEvent
-        lookup = dict(target_ct=ct, target_id=obj_id, ip=ip, user=None)
+        lookup = dict(target_ct=ct, target_id=obj_id)
         if request.user and request.user.is_authenticated():
-            lookup.update({'user': request.user})
-            lookup.pop('ip', None)
+            lookup['user'] = request.user
+        else:
+            lookup['ip'] = request.META['REMOTE_ADDR']
 
-        event, created = RatingEvent.objects.get_or_create(False, **lookup)
+        event, created = RatingEvent.objects.get_or_create(commit=False, **lookup)
         event.value = int(float(request.POST['vote']))
+        event.save()
+
+        rating, created = Rating.objects.get_or_create(commit=False, target_ct=ct, target_id=obj_id)
         rating.add_rating(event)
         rating.save()
-        event.save()
-        result_text = render_to_string('rabidratings/rating_result_text.html', {'event': event})
-        result['code'] = 200
-        result['text'] = result_text
-        result['avg_rating'] = render_to_string('rabidratings/avg_rating_vaule.html',
-                                                {'value': rating.avg_rating})
-        result['total_votes'] = rating.total_votes
+
+        result = dict(
+            code=200,
+            total_votes=rating.total_votes,
+            text=render_to_string( 'rabidratings/rating_result_text.html', {'event': event}),
+            avg_rating=render_to_string( 'rabidratings/avg_rating_vaule.html', {'value': rating.avg_rating})
+        )
+
     except Exception as e:
         transaction.rollback()
         logger.debug(e)
-        result['code'] = 500
-        result['error'] = _('I can not save your rating, please try again later')
         raise e
     else:
         transaction.commit()
