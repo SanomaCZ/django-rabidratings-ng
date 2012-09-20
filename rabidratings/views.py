@@ -60,14 +60,12 @@ def record_vote(request):
         event.save()
 
         rating, created = Rating.objects.get_or_create(commit=False, target_ct=ct, target_id=obj_id)
-        rating.add_rating(event)
-        rating.save()
 
         result = dict(
             code=200,
             total_votes=rating.total_votes,
-            text=render_to_string( 'rabidratings/rating_result_text.html', {'event': event}),
-            avg_rating=render_to_string( 'rabidratings/avg_rating_vaule.html', {'value': rating.avg_rating})
+            text=render_to_string('rabidratings/rating_result_text.html', {'event': event}),
+            avg_rating=render_to_string('rabidratings/avg_rating_vaule.html', {'value': rating.avg_rating})
         )
 
     except Exception as e:
