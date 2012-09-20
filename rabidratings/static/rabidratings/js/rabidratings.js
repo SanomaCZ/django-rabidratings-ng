@@ -89,7 +89,7 @@ var RabidRatings = function (options) {
 						var fill = e.pageX - $(el).offset().left;
 						if (($.browser.msie && $.browser.version=="7.0")) {
 							// damn IE7 - hack - hardcoded position
-							var fill = e.pageX - 820;
+							fill = e.pageX - 820;
 						}
 						var fillPercent = this.getVotePercent(fill);
 						var step = (100 / this.options.scale) * this.options.snap;
@@ -197,7 +197,7 @@ var RabidRatings = function (options) {
 		},
 
 		getFillPercent: function (starPercent) {
-			return (starPercent/100)*((this.options.starWidth+this.options.starMargin)*this.options.scale) + this.options.leftMargin;
+			return (starPercent / 100) * ((this.options.starWidth + this.options.starMargin) * this.options.scale) + this.options.leftMargin;
 		},
 
 		getVotePercent: function(divPosition) {

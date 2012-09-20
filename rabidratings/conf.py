@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 # Settings can be overridden in the main settings file.
 
@@ -17,3 +18,12 @@ RABIDRATINGS_ENABLE_CREATE_RATING_ON_SIGNAL = getattr(settings, 'RABIDRATINGS_EN
 RABIDRATINGS_CTS_FOR_CREATE_RATING = getattr(settings, 'RABIDRATINGS_CTS_FOR_CREATE_RATING', ())
 
 RABIDRATINGS_TIME_DELETE_OLD_RATINGS = getattr(settings, 'RABIDRATINGS_TIME_DELETE_OLD_RATINGS', 60 * 60 * 24 * 365)
+
+# verval values for RatingEvent model numerical value
+RATING_VERBAL_VALUES = {
+    20: _('Very bad'),
+    40: _('Not much'),
+    60: _('Average'),
+    80: _('Good'),
+    100: _('Excellent'),
+}

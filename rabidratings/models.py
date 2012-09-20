@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2008 Darrel Herbst
 #
 # This file is part of Django-Rabid-Ratings.
@@ -28,10 +27,13 @@ from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from rabidratings.conf import (
-                               RABIDRATINGS_ENABLE_CREATE_RATING_ON_SIGNAL,
-                               RABIDRATINGS_CTS_FOR_CREATE_RATING,
-                               )
+try:
+    from django.utils.timezone import now
+except ImportError:
+    from datetime import datetime
+    now = datetime.now
+
+from rabidratings import conf
 from rabidratings.utils import get_natural_key
 from rabidratings.managers import (
                                    _get_subclasses,
@@ -47,8 +49,8 @@ class BaseRating(models.Model):
     target_id = models.IntegerField(_('Target ID'), db_index=True)
     target = GenericForeignKey(ct_field="target_ct", fk_field="target_id")
 
-    created = models.DateTimeField(_('Date of created'), auto_now_add=True)
-    updated = models.DateTimeField(_('Date of last updated'), auto_now=True)
+    created = models.DateTimeField(_('Date of created'))
+    updated = models.DateTimeField(_('Date of last updated'))
 
     objects = BaseRatingManager()
 
@@ -62,7 +64,7 @@ class BaseRating(models.Model):
     @staticmethod
     def split_key(key):
         ct_id, obj_id = key.split("_")
-        return (ct_id, obj_id)
+        return ct_id, obj_id
 
     @key.setter
     def key(self, val):
@@ -73,6 +75,13 @@ class BaseRating(models.Model):
     def __unicode__(self):
         """ Used to identify the object in admin forms. """
         return unicode(self.target)
+
+    def save(self, *args, **kwargs):
+        self.updated = now()
+        if not self.pk:
+            self.created = self.updated
+
+        super(BaseRating, self).save(*args, **kwargs)
 
 
 class Rating(BaseRating):
@@ -97,9 +106,9 @@ class Rating(BaseRating):
 
     def clean(self):
         if self.avg_rating < Decimal("0.0"):
-                raise ValidationError(_("Average rating can not be negative"))
+            raise ValidationError(_("Average rating can not be negative"))
         if self.percent < 0.0:
-                raise ValidationError(_("Percent can not be negative"))
+            raise ValidationError(_("Percent can not be negative"))
 
     def save(self, *args, **kwargs):
         try:
@@ -128,10 +137,10 @@ class Rating(BaseRating):
         if event.is_changing:
             # the user decided to change their vote, so take away the old value first
             self.total_rating = self.total_rating - event.old_value
-            self.total_votes = self.total_votes - 1
+            self.total_votes -= 1
 
         self.total_rating = self.total_rating + event.value
-        self.total_votes = self.total_votes + 1
+        self.total_votes += 1
 
         self.avg_rating = Decimal(str(float(self.total_rating) / float(self.total_votes) / 20.0))
         self.percent = float(self.avg_rating) / 5.0
@@ -148,15 +157,6 @@ class RatingEvent(BaseRating):
     value = models.PositiveIntegerField(_('Value'), default=0)
 
     objects = RatingEventManager()
-
-    # verval values for model numerical value
-    VERBAL_VALUES = {
-       20: _('Very bad'),
-       40: _('Not much'),
-       60: _('Average'),
-       80: _('Good'),
-       100: _('Excellent'),
-    }
 
     class Meta:
         unique_together = (('target_ct', 'target_id', 'ip', 'user'),)
@@ -202,7 +202,10 @@ class RatingEvent(BaseRating):
         """
         Returns verbal value of value attr.
         """
-        return self.VERBAL_VALUES.get(self.value, '')
+        try:
+            return conf.RATING_VERBAL_VALUES[self.value]
+        except KeyError:
+            return ""
 
 
 def by_rating(self):
@@ -215,10 +218,10 @@ def by_rating(self):
 
     str_cts = "(%s)" % (", ".join([str(ContentType.objects.get_for_model(m).id) for m in _get_subclasses(self.model)]),)
     rating_table = qn(Rating._meta.db_table)
-    order_by = ['-%s.avg_rating' % (rating_table)]
+    order_by = ['-%s.avg_rating' % rating_table]
     order_by.extend(self.query.order_by[:])
     return self.extra(
-        tables=['%s' % (rating_table,)],
+        tables=['%s' % rating_table],
         where=['''%(rating_table)s.target_ct_id IN %(cts)s 
                     and %(rating_table)s.target_id = %(target_id)s''' % {
                                                                          'rating_table': rating_table,
@@ -237,11 +240,11 @@ def create_rating_for_cts(sender, **kwargs):
     Create ratings for creating objects
     whose models are spec in RABIDRATINGS_CTS_FOR_CREATE_RATING
     '''
-    if (get_natural_key(sender) in RABIDRATINGS_CTS_FOR_CREATE_RATING
+    if (get_natural_key(sender) in conf.RABIDRATINGS_CTS_FOR_CREATE_RATING
         and kwargs.get('created', False) and not kwargs.get('raw', False)):
         instance = kwargs['instance']
         ct = ContentType.objects.get_for_model(sender)
         Rating.objects.get_or_create(target_ct=ct, target_id=instance.id)
 
-if RABIDRATINGS_ENABLE_CREATE_RATING_ON_SIGNAL:
+if conf.RABIDRATINGS_ENABLE_CREATE_RATING_ON_SIGNAL:
     signals.post_save.connect(create_rating_for_cts)

@@ -17,6 +17,7 @@
 # along with Django-Rabid-Ratings.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django import template
+from rabidratings import conf
 
 from rabidratings.conf import RABIDRATINGS_STATIC_URL
 from rabidratings.models import Rating, RatingEvent
@@ -61,5 +62,5 @@ def rating_header(context):
     """ Inserts necessary includes into the html. """
     return {
             'rabidratings_static_url': RABIDRATINGS_STATIC_URL,
-            'verbal_values': RatingEvent.VERBAL_VALUES,
+            'verbal_values': conf.RATING_VERBAL_VALUES,
             }

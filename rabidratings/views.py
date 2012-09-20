@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2008 Darrel Herbst
 #
 # This file is part of Django-Rabid-Ratings.
@@ -52,14 +51,14 @@ def record_vote(request):
         ct_id, obj_id = Rating.split_key(key)
         ct = ContentType.objects.get(id=ct_id)
 
-        rating = Rating.objects.get_or_create(False, target_ct=ct, target_id=obj_id)[0]
+        rating, created = Rating.objects.get_or_create(False, target_ct=ct, target_id=obj_id)
         # lookup for model RatingEvent
         lookup = dict(target_ct=ct, target_id=obj_id, ip=ip, user=None)
         if request.user and request.user.is_authenticated():
             lookup.update({'user': request.user})
             lookup.pop('ip', None)
 
-        event = RatingEvent.objects.get_or_create(False, **lookup)[0]
+        event, created = RatingEvent.objects.get_or_create(False, **lookup)
         event.value = int(float(request.POST['vote']))
         rating.add_rating(event)
         rating.save()
