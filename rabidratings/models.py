@@ -159,7 +159,7 @@ class RatingEvent(BaseRating):
     }
 
     class Meta:
-        unique_together = (('target_ct', 'target_id', 'ip', 'user'),)
+        unique_together = (('target_ct', 'target_id', 'user',))
         verbose_name = _('Rating event')
         verbose_name_plural = _('Rating events')
 
@@ -170,17 +170,8 @@ class RatingEvent(BaseRating):
         self.is_changing = False
 
     def clean(self):
-        lookup = dict(target_ct=self.target_ct, target_id=self.target_id, ip=self.ip, user=self.user)
-        if self.user:
-            lookup.update({'user': self.user})
-            lookup.pop('ip', None)
-        try:
-            obj = self.__class__.objects.get_object(**lookup)
-        except self.__class__.DoesNotExist:
-            pass
-        else:
-            if obj.pk != self.pk:
-                raise ValidationError(_("Rating event already exists"))
+        if not self.user:
+            raise ValidationError(_("User is required for rating event"))
 
     def save(self, *args, **kwargs):
         try:
@@ -188,6 +179,10 @@ class RatingEvent(BaseRating):
         except ValidationError, e:
             raise IntegrityError(e.messages)
 
+        if self.value > 0:
+            rating = Rating.objects.get_or_create(False, target_ct=self.target_ct, target_id=self.target_id)[0]
+            rating.add_rating(self)
+            rating.save()
         super(RatingEvent, self).save(*args, **kwargs)
 
     @property
