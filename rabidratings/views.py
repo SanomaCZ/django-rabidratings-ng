@@ -17,6 +17,7 @@
 #
 import logging
 
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.transaction import commit_manually
@@ -70,8 +71,11 @@ def record_vote(request):
 
     except Exception as e:
         transaction.rollback()
-        logger.debug(e)
-        raise e
+        logger.error(e)
+        result = dict(
+            code=500,
+            error=_('I can not save your rating, please try again later')
+        )
     else:
         transaction.commit()
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-19 09:29+0200\n"
+"POT-Creation-Date: 2012-09-25 11:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,123 +18,130 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2\n"
 
-#: models.py:42
-msgid "Target content type"
-msgstr "Typ obsahu cíle"
-
-#: models.py:43
-msgid "Target ID"
-msgstr "Id cíle"
-
-#: models.py:46
-msgid "Date of created"
-msgstr "Datum vytvoření"
-
-#: models.py:47
-msgid "Date of last updated"
-msgstr "Datum poslední úpravy"
-
-#: models.py:84
-msgid "Total Rating Sum (computed)"
-msgstr "Celkové hodnocení (vypočítané)"
-
-#: models.py:85
-msgid "Total Votes (computed)"
-msgstr "Celkový počet hlasů (vypočítaný)"
-
-#: models.py:86
-msgid "Average Rating (computed)"
-msgstr "Průměrné hodnocení (vypočítané)"
-
-#: models.py:87
-msgid "Percent Fill (computed)"
-msgstr "Vyplněná procenta (vypočítané)"
-
-#: models.py:91 templates/rabidratings/rating.html:19
-msgid "Rating"
-msgstr "Hodnocení"
-
-#: models.py:92
-msgid "Ratings"
-msgstr "Hodnocení"
-
-#: models.py:96
-msgid "Average rating can not be negative"
-msgstr "Průměrné hodnocení nemůže být záporné"
-
-#: models.py:98
-msgid "Percent can not be negative"
-msgstr "Procenta nemohou být záporná"
-
-#: models.py:142
-msgid "IP address"
-msgstr "IP adresa"
-
-#: models.py:143
-msgid "User who has rated"
-msgstr "Hodnotitel"
-
-#: models.py:144
-msgid "Value"
-msgstr "Hodnota"
-
-#: models.py:148
+#: conf.py:24
 msgid "Very bad"
 msgstr "Velmi špatné"
 
-#: models.py:149
+#: conf.py:25
 msgid "Not much"
 msgstr "Nic moc"
 
-#: models.py:150
+#: conf.py:26
 msgid "Average"
 msgstr "Průměrné"
 
-#: models.py:151
+#: conf.py:27
 msgid "Good"
 msgstr "Dobré"
 
-#: models.py:152
+#: conf.py:28
 msgid "Excellent"
 msgstr "Vynikající"
 
-#: models.py:157
+#: models.py:47
+msgid "Target content type"
+msgstr "Typ obsahu cíle"
+
+#: models.py:48
+msgid "Target ID"
+msgstr "Id cíle"
+
+#: models.py:51
+msgid "Date of created"
+msgstr "Datum vytvoření"
+
+#: models.py:52
+msgid "Date of last updated"
+msgstr "Datum poslední úpravy"
+
+#: models.py:96
+msgid "Total Rating Sum (computed)"
+msgstr "Celkové hodnocení (vypočítané)"
+
+#: models.py:97
+msgid "Total Votes (computed)"
+msgstr "Celkový počet hlasů (vypočítaný)"
+
+#: models.py:98
+msgid "Average Rating (computed)"
+msgstr "Průměrné hodnocení (vypočítané)"
+
+#: models.py:99
+msgid "Percent Fill (computed)"
+msgstr "Vyplněná procenta (vypočítané)"
+
+#: models.py:103 templates/rabidratings/rating.html:23
+msgid "Rating"
+msgstr "Hodnocení"
+
+#: models.py:104
+msgid "Ratings"
+msgstr "Hodnocení"
+
+#: models.py:108
+msgid "Average rating can not be negative"
+msgstr "Průměrné hodnocení nemůže být záporné"
+
+#: models.py:110
+msgid "Percent can not be negative"
+msgstr "Procenta nemohou být záporná"
+
+#: models.py:154
+msgid "IP address"
+msgstr "IP adresa"
+
+#: models.py:155
+msgid "User who has rated"
+msgstr "Hodnotitel"
+
+#: models.py:156
+msgid "Value"
+msgstr "Hodnota"
+
+#: models.py:160
 msgid "Rating event"
 msgstr "Událost hodnocení"
 
-#: models.py:158
+#: models.py:161
 msgid "Rating events"
 msgstr "Události hodnocení"
 
-#: models.py:177
-msgid "Rating event already exists"
-msgstr "Tato událost hodnocení již existuje"
+#: models.py:171
+msgid "User is required for rating event"
+msgstr ""
 
 #: urls.py:8
 msgid "submit"
 msgstr "potvrzení"
 
-#: views.py:79
+#: views.py:77
 msgid "I can not save your rating, please try again later"
 msgstr "Nemohu uložit vaše hodnocení, prosím zkuste to později"
 
-#: templates/rabidratings/rating.html:5
+#: templates/rabidratings/rating.html:6
 #: templates/rabidratings/rating_result_text.html:3
 msgid "Rating from you"
 msgstr "Vaše hodnocení"
 
-#: templates/rabidratings/rating.html:5
+#: templates/rabidratings/rating.html:6
 msgid "You have not yet rated"
 msgstr "Ještě jste nehodnotil"
 
-#: templates/rabidratings/rating.html:19
+#: templates/rabidratings/rating.html:17
+msgid "If you want rating, you have to be logged in"
+msgstr "Pokud chcete hodnotit musíte se přihlásit"
+
+#: templates/rabidratings/rating.html:23
 msgid "by users"
 msgstr "uživateli"
 
-#: templates/rabidratings/rating.html:19
+#: templates/rabidratings/rating.html:23
 msgid "not yet rated"
 msgstr "zatím nehodnoceno"
 
 #: templates/rabidratings/rating_result_text.html:4
 msgid "You can change the view"
 msgstr "Kdykoli můžete změnit svůj názor"
+
+#~ msgid "Rating event already exists"
+#~ msgstr "Tato událost hodnocení již existuje"
