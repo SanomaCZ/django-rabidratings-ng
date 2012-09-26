@@ -34,15 +34,14 @@ def show_rating(context, obj, show_parts='all'):
         raise ValueError('Missing request')
 
     rating = Rating.objects.get_for_object(obj)
-    user_rating = 0
     try:
-        lookup = dict(ip=request.META['REMOTE_ADDR'], user=None)
         if request.user.is_authenticated():
-            lookup.update({'user': request.user})
-            lookup.pop('ip', None)
+            lookup = dict(user=request.user)
+        else:
+            lookup = dict(ip=request.META['REMOTE_ADDR'])
         rating_event = RatingEvent.objects.get_for_object(obj, False, **lookup)
     except RatingEvent.DoesNotExist:
-        pass
+        user_rating = 0
     else:
         user_rating = rating_event.stars_value
     return {
@@ -55,7 +54,7 @@ def show_rating(context, obj, show_parts='all'):
         'user_rating': user_rating,
         'show_parts': show_parts,
         'user': request.user,
-        }
+    }
 
 
 @register.inclusion_tag("rabidratings/rating_header_js.html", takes_context=True)
@@ -64,7 +63,7 @@ def rating_header_js(context):
     return {
             'rabidratings_static_url': RABIDRATINGS_STATIC_URL,
             'verbal_values': conf.RATING_VERBAL_VALUES,
-            }
+    }
 
 
 @register.inclusion_tag("rabidratings/rating_header_css.html", takes_context=True)
@@ -72,4 +71,4 @@ def rating_header_css(context):
     """ Inserts necessary css into the html. """
     return {
             'rabidratings_static_url': RABIDRATINGS_STATIC_URL,
-            }
+    }
