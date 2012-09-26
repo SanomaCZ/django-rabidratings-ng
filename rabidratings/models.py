@@ -133,7 +133,7 @@ class Rating(BaseRating):
 
         """
 
-        if event.is_changing:
+        if getattr(event, 'is_changing', False):
             # the user decided to change their vote, so take away the old value first
             self.total_rating = self.total_rating - event.old_value
             self.total_votes -= 1
@@ -160,12 +160,6 @@ class RatingEvent(BaseRating):
         verbose_name = _('Rating event')
         verbose_name_plural = _('Rating events')
 
-    def __init__(self, *args, **kwargs):
-        """ A vote is from one ip address - and then it can be changed. """
-        super(RatingEvent, self).__init__(*args, **kwargs)
-
-        self.is_changing = False
-
     def clean(self):
         if not self.user:
             raise ValidationError(_("User is required for rating event"))
@@ -176,14 +170,12 @@ class RatingEvent(BaseRating):
         except ValidationError, e:
             raise IntegrityError(e.messages)
 
-        if self.value > 0:
-            rating, created = Rating.objects.get_or_create(False, target_ct=self.target_ct, target_id=self.target_id)
-            if self.pk and getattr(self, 'old_value', 0) > 0:
-                self.is_changing = True
-            rating.add_rating(self)
-            if self.pk and getattr(self, 'old_value', 0) > 0:
-                self.is_changing = False
-            rating.save()
+        rating, created = Rating.objects.get_or_create(False, target_ct=self.target_ct, target_id=self.target_id)
+        if (getattr(self, 'is_changing', None) is None
+            and getattr(self, 'old_value', None) is not None):
+            self.is_changing = True
+        rating.add_rating(self)
+        rating.save()
         super(RatingEvent, self).save(*args, **kwargs)
 
     def __setattr__(self, name, value):

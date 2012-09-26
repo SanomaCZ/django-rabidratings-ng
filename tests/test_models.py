@@ -145,3 +145,34 @@ class TestRatingEventModel(TestCase):
         ratingevent = RatingEvent.objects.get_or_create(**self.lookup)[0]
         ratingevent.value = 30
         tools.assert_equals(ratingevent.verbal_value, '')
+
+
+class TestQuerySetWithRating(TestCase):
+
+    def setUp(self):
+        super(TestQuerySetWithRating, self).setUp()
+        self.user = User.objects.create_user(username='johan')
+        self.test_obj1 = User.objects.create_user(username='test_obj1')
+        self.test_obj2 = User.objects.create_user(username='test_obj2')
+        self.test_obj3 = User.objects.create_user(username='test_obj3')
+
+    def test_get_objects_by_rating(self):
+        ct = ContentType.objects.get_for_model(self.test_obj2.__class__)
+        lookup = dict(target_ct=ct, target_id=self.test_obj2.id, user=self.user)
+        rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
+        rating_event.value = 80
+        rating_event.save()
+        
+        ct = ContentType.objects.get_for_model(self.test_obj1.__class__)
+        lookup = dict(target_ct=ct, target_id=self.test_obj1.id, user=self.user)
+        rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
+        rating_event.value = 40
+        rating_event.save()
+
+        ct = ContentType.objects.get_for_model(self.test_obj3.__class__)
+        lookup = dict(target_ct=ct, target_id=self.test_obj3.id, user=self.user)
+        rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
+        
+        list_users = list(User.objects.filter(username__startswith='test_').by_rating())
+        
+        tools.assert_equals(list_users, [self.test_obj2, self.test_obj1, self.test_obj3])
