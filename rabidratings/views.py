@@ -78,7 +78,7 @@ def record_vote(request):
         logger.error(e)
         result = dict(
             code=500,
-            error=_('I can not save your rating, please try again later')
+            error=render_to_string('rabidratings/rating_result_error_text.html')
         )
     else:
         transaction.commit()
