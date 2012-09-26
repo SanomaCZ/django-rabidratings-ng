@@ -57,10 +57,7 @@ def record_vote(request):
             lookup['ip'] = request.META['REMOTE_ADDR']
 
         event, created = RatingEvent.objects.get_or_create(commit=False, **lookup)
-        if created:
-            event.is_changing = False
-        else:
-            event.is_changing = True
+        event.is_changing = not created
         event.value = int(float(request.POST['vote']))
         event.save()
 
