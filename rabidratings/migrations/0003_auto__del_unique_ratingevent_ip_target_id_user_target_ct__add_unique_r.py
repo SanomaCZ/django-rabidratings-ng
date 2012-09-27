@@ -63,23 +63,23 @@ class Migration(SchemaMigration):
         'rabidratings.rating': {
             'Meta': {'unique_together': "(('target_ct', 'target_id'),)", 'object_name': 'Rating'},
             'avg_rating': ('django.db.models.fields.DecimalField', [], {'default': "'0.0'", 'max_digits': '2', 'decimal_places': '1'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'created': ('django.db.models.fields.DateTimeField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'percent': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
             'target_ct': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
             'target_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'}),
             'total_rating': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'total_votes': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
-            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
+            'updated': ('django.db.models.fields.DateTimeField', [], {})
         },
         'rabidratings.ratingevent': {
             'Meta': {'unique_together': "(('target_ct', 'target_id', 'user'),)", 'object_name': 'RatingEvent'},
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'created': ('django.db.models.fields.DateTimeField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'ip': ('django.db.models.fields.IPAddressField', [], {'max_length': '15', 'null': 'True'}),
             'target_ct': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
             'target_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'}),
-            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'updated': ('django.db.models.fields.DateTimeField', [], {}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'value': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'})
         }
