@@ -17,7 +17,6 @@
 #
 import logging
 
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.transaction import commit_manually

@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-#from django import template
+from django import template
 from django.template import Context
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User, AnonymousUser
@@ -90,3 +90,36 @@ class TestShowRating(TestCase):
         tools.assert_equals(template_context, result)
         tools.assert_equals(RatingEvent.objects.count(), 0)
         tools.assert_equals(Rating.objects.count(), 1)
+
+    def test_show_rating_tag_template_for_user_default(self):
+        self.client.login(username='johan', password='johan')
+        self.rf.user = self.user
+        c = Context({'request': self.rf,
+                     'object': self.test_obj1})
+        t = template.Template('{% load rabidratings_tags %}{% show_rating object %}')
+        tools.assert_equals(u'USER or ALLSTATISTIC or ALL', t.render(c).strip().replace("\n", "").replace("\t", ""))
+
+    def test_show_rating_tag_template_for_user_user_part(self):
+        self.client.login(username='johan', password='johan')
+        self.rf.user = self.user
+        c = Context({'request': self.rf,
+                     'object': self.test_obj1})
+        t = template.Template('{% load rabidratings_tags %}{% show_rating object "user" %}')
+        tools.assert_equals(u'USER or ALL', t.render(c).strip())
+
+    def test_show_rating_tag_template_for_user_statistics_part(self):
+        self.client.login(username='johan', password='johan')
+        self.rf.user = self.user
+        c = Context({'request': self.rf,
+                     'object': self.test_obj1})
+        t = template.Template('{% load rabidratings_tags %}{% show_rating object "statistics" %}')
+        tools.assert_equals(u'STATISTIC or ALL', t.render(c).strip())
+
+    def test_show_rating_tag_template_for_anonymous_user_default(self):
+        user = AnonymousUser()
+        self.rf.user = user
+        self.rf.META = dict(REMOTE_ADDR='192.168.2.1')
+        c = Context({'request': self.rf,
+                     'object': self.test_obj1})
+        t = template.Template('{% load rabidratings_tags %}{% show_rating object %}')
+        tools.assert_equals(u'NOT FOR ANONYMOUSSTATISTIC or ALL', t.render(c).strip().replace("\n", "").replace("\t", ""))

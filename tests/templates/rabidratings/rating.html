@@ -1,0 +1,10 @@
+{% if show_parts == 'user' or show_parts == 'all' %}
+	{% if user.is_authenticated %}
+		USER or ALL
+	{% else %}
+		NOT FOR ANONYMOUS
+	{% endif %}
+{% endif %}
+{% if show_parts == 'statistics' or show_parts == 'all' %}
+	STATISTIC or ALL
+{% endif %}
