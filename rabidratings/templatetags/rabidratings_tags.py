@@ -29,9 +29,7 @@ register = template.Library()
 def show_rating(context, obj, show_parts='all'):
     """ Displays necessary html for the rating. """
 
-    request = context.get('request', None)
-    if not request:
-        raise ValueError('Missing request')
+    request = context.get('request')
 
     rating = Rating.objects.get_for_object(obj)
     try:

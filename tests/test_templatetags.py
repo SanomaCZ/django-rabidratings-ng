@@ -1,8 +1,7 @@
 from decimal import Decimal
 
-from django import template
+#from django import template
 from django.template import Context
-from django.db import IntegrityError
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User, AnonymousUser
 from django.test import TestCase, RequestFactory
@@ -69,4 +68,25 @@ class TestShowRating(TestCase):
         }
         tools.assert_equals(template_context, result)
         tools.assert_equals(RatingEvent.objects.count(), 1)
+        tools.assert_equals(Rating.objects.count(), 1)
+
+    def test_show_rating_tag_for_anonymous_user(self):
+        user = AnonymousUser()
+        self.rf.user = user
+        self.rf.META = dict(REMOTE_ADDR='192.168.2.1')
+        c = Context({'request': self.rf})
+        result = show_rating(c, self.test_obj1)
+        template_context = {
+            'rating_key': Rating.objects.all()[0].key,
+            'total_votes': 0,
+            'total_ratings': 0,
+            'rating': Decimal("0.0"),
+            'percent': 0.0,
+            'max_stars': 5,
+            'user_rating': 0,
+            'show_parts': 'all',
+            'user': user,
+        }
+        tools.assert_equals(template_context, result)
+        tools.assert_equals(RatingEvent.objects.count(), 0)
         tools.assert_equals(Rating.objects.count(), 1)

@@ -176,9 +176,14 @@ class RatingEvent(BaseRating):
                 self.is_changing = True
             rating.add_rating(self)
             rating.save()
+            if hasattr(self, 'old_value'):
+                delattr(self, 'old_value')
+                setattr(self, 'old_value', self.value)
         super(RatingEvent, self).save(*args, **kwargs)
 
     def __setattr__(self, name, value):
+        if name == "old_value" and getattr(self, 'old_value', None) is not None:
+            return
         if name == "value" and hasattr(self, 'value'):
             self.old_value = getattr(self, 'value')
         super(RatingEvent, self).__setattr__(name, value)
