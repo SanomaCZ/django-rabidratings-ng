@@ -1,15 +1,21 @@
+.rating.row {
+	margin-bottom: 20px;
+}
+
+.rabidRatingUser {
+	margin: 
+}
+
 .rabidRatingUser .wrapper {	
 	cursor: pointer;
 	background: #ccc;
-}
-
-.rabidRatingUser .wrapper {
 	overflow: hidden;
+	margin-bottom: 5px;
 }
 
 .rabidRatingUser span, .rabidRatingUser .wrapper {
 	display: block;
-	width: /*136*/110px;
+	width: /*136*/130px;
 	height: /*25*/25px;
 }
 
@@ -26,7 +32,7 @@
 }
 
 .rabidRatingUser .ratingFill {
-	background-color: #ffd700;
+	background-color: #E00814;
 }
 
 .rabidRatingUser .ratingVoted {
@@ -38,8 +44,8 @@
 	background-color: #ffa800;
 }
 
-.rabidRatingUser .ratingText {
-	/* color: #000; */
+.rabidRatingUser .ratingText strong {
+	color: #E00814;
 }
 
 .rabidRatingUser .ratingText.ratingError {
@@ -56,6 +62,7 @@
 .rabidRatingStatistics .wrapper {	
 	cursor: default;
 	background: #ccc;
+	margin-bottom: 5px;
 }
 
 .rabidRatingStatistics .wrapper {
@@ -64,7 +71,7 @@
 
 .rabidRatingStatistics span, .rabidRatingStatistics .wrapper {
 	display: block;
-	width: /*110*/110px;
+	width: /*110*/130px;
 	height: /*25*/25px;
 }
 
@@ -81,7 +88,7 @@
 }
 
 .rabidRatingStatistics .ratingFill {
-	background-color: orange;
+	background-color: #E00814;
 }
 
 .rabidRatingStatistics .ratingVoted {
@@ -93,8 +100,28 @@
 	background-color: #ffa800;
 }
 
-.rabidRatingStatistics .ratingText {
-	/* color: #000; */
+article .recipe-wrapper .rating p {
+	margin: 0;
+}
+
+.total-votes {
+	text-align: right;
+}
+
+.ratingAvg {
+	color: #E00814;
+}
+
+.rabidRatingUser {
+	width: 200px;
+	margin: 0 auto;
+	color: #949494;
+}
+
+.rabidRatingStatistics {
+	width: 130px;
+	margin: 0 auto;
+	color: #949494;
 }
 
 .rabidRatingStatistics .ratingText.ratingError {
