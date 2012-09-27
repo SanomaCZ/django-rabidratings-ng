@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-25 11:27+0200\n"
+"POT-Creation-Date: 2012-09-27 11:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -106,17 +106,13 @@ msgstr "Událost hodnocení"
 msgid "Rating events"
 msgstr "Události hodnocení"
 
-#: models.py:171
+#: models.py:165
 msgid "User is required for rating event"
 msgstr ""
 
 #: urls.py:8
 msgid "submit"
 msgstr "potvrzení"
-
-#: views.py:77
-msgid "I can not save your rating, please try again later"
-msgstr "Nemohu uložit vaše hodnocení, prosím zkuste to později"
 
 #: templates/rabidratings/rating.html:6
 #: templates/rabidratings/rating_result_text.html:3
@@ -138,6 +134,10 @@ msgstr "uživateli"
 #: templates/rabidratings/rating.html:23
 msgid "not yet rated"
 msgstr "zatím nehodnoceno"
+
+#: templates/rabidratings/rating_result_error_text.html:2
+msgid "I can not save your rating, please try again later"
+msgstr "Nemohu uložit vaše hodnocení, prosím zkuste to později"
 
 #: templates/rabidratings/rating_result_text.html:4
 msgid "You can change the view"
