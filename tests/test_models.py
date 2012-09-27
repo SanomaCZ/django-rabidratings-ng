@@ -170,8 +170,8 @@ class TestQuerySetWithRating(TestCase):
         rating_event.save()
 
         ct = ContentType.objects.get_for_model(self.test_obj3.__class__)
-        lookup = dict(target_ct=ct, target_id=self.test_obj3.id, user=self.user)
-        rating_event = RatingEvent.objects.get_or_create(**lookup)[0]
+        lookup = dict(target_ct=ct, target_id=self.test_obj3.id)
+        rating = Rating.objects.get_or_create(**lookup)[0]
         
         list_users = list(User.objects.filter(username__startswith='test_').by_rating())
         

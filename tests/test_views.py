@@ -18,11 +18,11 @@ class TestRatingsVote(TestCase):
         self.test_obj2 = User.objects.create_user(username='test_obj2')
         ct = ContentType.objects.get_for_model(self.test_obj1.__class__)
         lookup = dict(target_ct=ct, target_id=self.test_obj1.id)
-        self.rating_event = Rating.objects.get_or_create(**lookup)[0]
+        self.rating = Rating.objects.get_or_create(**lookup)[0]
 
     def test_record_vote_by_user_success(self):
         data = dict(
-            id=self.rating_event.key,
+            id=self.rating.key,
             vote='80'
         )
         self.client.login(username='johan', password='johan')
@@ -35,7 +35,7 @@ class TestRatingsVote(TestCase):
 
     def test_record_voteby_user_fail(self):
         data = dict(
-            id=self.rating_event.key,
+            id=self.rating.key,
         )
         self.client.login(username='johan', password='johan')
         response = self.client.post('/submit/', data)
@@ -46,7 +46,7 @@ class TestRatingsVote(TestCase):
 
     def test_record_voteby_anonymous_user_fail(self):
         data = dict(
-            id=self.rating_event.key,
+            id=self.rating.key,
             vote='80'
         )
         response = self.client.post('/submit/', data)
@@ -57,7 +57,7 @@ class TestRatingsVote(TestCase):
 
     def test_record_vote_by_user_for_obj_again(self):
         data = dict(
-            id=self.rating_event.key,
+            id=self.rating.key,
             vote='80'
         )
         self.client.login(username='johan', password='johan')
@@ -78,7 +78,7 @@ class TestRatingsVote(TestCase):
 
     def test_record_vote_by_two_user_for_same_obj(self):
         data = dict(
-            id=self.rating_event.key,
+            id=self.rating.key,
             vote='80'
         )
         self.client.login(username='johan', password='johan')

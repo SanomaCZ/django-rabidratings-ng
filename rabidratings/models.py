@@ -95,7 +95,7 @@ class Rating(BaseRating):
     """
     total_rating = models.PositiveIntegerField(verbose_name=_('Total Rating Sum (computed)'), default=0)
     total_votes = models.PositiveIntegerField(verbose_name=_('Total Votes (computed)'), default=0)
-    avg_rating = models.DecimalField(verbose_name=_('Average Rating (computed)'), default="0.0", max_digits=2, decimal_places=1)
+    avg_rating = models.DecimalField(verbose_name=_('Average Rating (computed)'), default=Decimal("0.0"), max_digits=2, decimal_places=1)
     percent = models.FloatField(verbose_name=_('Percent Fill (computed)'), default=0.0)
 
     class Meta:
@@ -133,7 +133,7 @@ class Rating(BaseRating):
 
         """
 
-        if getattr(event, 'is_changing', False):
+        if getattr(event, 'is_changing', False) and event.old_value > 0:
             # the user decided to change their vote, so take away the old value first
             self.total_rating = self.total_rating - event.old_value
             self.total_votes -= 1
@@ -169,13 +169,13 @@ class RatingEvent(BaseRating):
             self.clean()
         except ValidationError, e:
             raise IntegrityError(e.messages)
-
-        rating, created = Rating.objects.get_or_create(False, target_ct=self.target_ct, target_id=self.target_id)
-        if (getattr(self, 'is_changing', None) is None
-            and getattr(self, 'old_value', None) is not None):
-            self.is_changing = True
-        rating.add_rating(self)
-        rating.save()
+        if self.value > 0:
+            rating, created = Rating.objects.get_or_create(False, target_ct=self.target_ct, target_id=self.target_id)
+            if (getattr(self, 'is_changing', None) is None
+                and getattr(self, 'old_value', None) is not None):
+                self.is_changing = True
+            rating.add_rating(self)
+            rating.save()
         super(RatingEvent, self).save(*args, **kwargs)
 
     def __setattr__(self, name, value):
