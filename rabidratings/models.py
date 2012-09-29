@@ -171,22 +171,13 @@ class RatingEvent(BaseRating):
             raise IntegrityError(e.messages)
         if self.value > 0:
             rating, created = Rating.objects.get_or_create(False, target_ct=self.target_ct, target_id=self.target_id)
-            if (getattr(self, 'is_changing', None) is None
-                and getattr(self, 'old_value', None) is not None):
+            if self.pk and getattr(self, 'is_changing', None) is None:
                 self.is_changing = True
+                self.old_value = self._default_manager.get(pk=self.pk).value
             rating.add_rating(self)
             rating.save()
-            if hasattr(self, 'old_value'):
-                delattr(self, 'old_value')
-                setattr(self, 'old_value', self.value)
+            self.old_value = self.value
         super(RatingEvent, self).save(*args, **kwargs)
-
-    def __setattr__(self, name, value):
-        if name == "old_value" and getattr(self, 'old_value', None) is not None:
-            return
-        if name == "value" and hasattr(self, 'value'):
-            self.old_value = getattr(self, 'value')
-        super(RatingEvent, self).__setattr__(name, value)
 
     @property
     def stars_value(self):
