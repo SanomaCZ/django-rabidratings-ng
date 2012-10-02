@@ -28,10 +28,6 @@ var RabidRatings = function (options) {
 		},
 
 		init: function() {
-			var activeColor = this.options.activeColor;
-			var votedColor  = this.options.votedColor;
-			var fillColor   = this.options.fillColor;
-			
 			$.each($('.rabidRatingStatistics'), $.proxy(function(index, elStatistics) {
 				if (($.browser.msie && $.browser.version=="6.0")) {
 					//Replaces all the fancy with a text description of the votes for IE6.
@@ -100,22 +96,19 @@ var RabidRatings = function (options) {
 
 					el.mouseenter = function(e) {
 						el.oldText = $(el.textEl).html();
-						$(el).toggleClass('.rabidRatingUser .ratingActive')
 						el.wrapper.mousemove(el.mouseCrap)
 					}
 
 					el.mouseleave = function(e) {
 						$(el).unbind('mousemove', el.mouseCrap);
-						$(el).toggleClass('.rabidRatingUser .ratingFill');
 						$(el.fill).css('width',el.currentFill);
 						$(el.textEl).html(el.oldText);
 					}
 
 					el.click = $.proxy(function(e) {
 						el.currentFill = el.newFill;
-						$(el.fill).toggleClass('.rabidRatingUser .ratingVoted');
+						$(el.fill).addClass('ratingVoted');
 						$(el.wrapper).unbind();
-						$(el).addClass('ratingVoted');
 						$(el.textEl).addClass('loading');
 						var votePercent = this.getVotePercent(el.newFill);
 						if (this.options.url != null) {

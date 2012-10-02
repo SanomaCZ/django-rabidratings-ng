@@ -33,11 +33,6 @@
 
 .rabidRatingUser .ratingVoted {
 	cursor: default;
-	background-color: #0069ff;
-}
-
-.rabidRatingUser .ratingActive {
-	background-color: #ffa800;
 }
 
 .rabidRatingUser .ratingText strong {
@@ -85,15 +80,6 @@
 
 .rabidRatingStatistics .ratingFill {
 	background-color: #E00814;
-}
-
-.rabidRatingStatistics .ratingVoted {
-	cursor: default;
-	background-color: #0069ff;
-}
-
-.rabidRatingStatistics .ratingActive {
-	background-color: #ffa800;
 }
 
 article .recipe-wrapper .rating p {
