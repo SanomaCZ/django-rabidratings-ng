@@ -37,6 +37,7 @@ class TestShowRating(TestCase):
             'user_rating': 0,
             'show_parts': 'all',
             'user': self.user,
+            'user_rating_updated': None,
         }
         tools.assert_equals(template_context, result)
         tools.assert_equals(RatingEvent.objects.count(), 0)
@@ -65,6 +66,7 @@ class TestShowRating(TestCase):
             'user_rating': 4,
             'show_parts': 'all',
             'user': self.user,
+            'user_rating_updated': RatingEvent.objects.all()[0].updated,
         }
         tools.assert_equals(template_context, result)
         tools.assert_equals(RatingEvent.objects.count(), 1)
@@ -86,6 +88,7 @@ class TestShowRating(TestCase):
             'user_rating': 0,
             'show_parts': 'all',
             'user': user,
+            'user_rating_updated': None,
         }
         tools.assert_equals(template_context, result)
         tools.assert_equals(RatingEvent.objects.count(), 0)

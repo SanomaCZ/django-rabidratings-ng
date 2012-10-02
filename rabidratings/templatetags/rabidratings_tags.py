@@ -40,8 +40,10 @@ def show_rating(context, obj, show_parts='all'):
         rating_event = RatingEvent.objects.get_for_object(obj, False, **lookup)
     except RatingEvent.DoesNotExist:
         user_rating = 0
+        user_rating_updated = None
     else:
         user_rating = rating_event.stars_value
+        user_rating_updated = rating_event.updated
     return {
         'rating_key': rating.key,
         'total_votes': rating.total_votes,
@@ -51,6 +53,7 @@ def show_rating(context, obj, show_parts='all'):
         'max_stars': 5,
         'user_rating': user_rating,
         'show_parts': show_parts,
+        'user_rating_updated': user_rating_updated,
         'user': request.user,
     }
 
