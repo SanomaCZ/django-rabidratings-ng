@@ -34,17 +34,17 @@ var RabidRatings = function (options) {
 					//If you want IE6 users to have something fancier to look at, add it here.
 					$('.ratingText', elStatistics).insertBefore(elStatistics);
 					$(elStatistics).remove();
+					return;
 				}
-				else
-				{
-					elStatistics.id = $(elStatistics).attr('id');
-					elStatistics.fill = $('.ratingFill', elStatistics);
-					elStatistics.textEl = $('.ratingText', elStatistics);
-					elStatistics.totalVotes = $('.totalVotes', elStatistics.textEl);
-					elStatistics.ratingAvg = $('.ratingAvg', elStatistics.textEl);
-					elStatistics.starPercent = this.getStarPercentFromId(elStatistics.id);
-					this.fillVote(elStatistics.starPercent, elStatistics);
-				}
+
+				elStatistics.id = $(elStatistics).attr('id');
+				elStatistics.fill = $('.ratingFill', elStatistics);
+				elStatistics.textEl = $('.ratingText', elStatistics);
+				elStatistics.totalVotes = $('.totalVotes', elStatistics.textEl);
+				elStatistics.ratingAvg = $('.ratingAvg', elStatistics.textEl);
+				elStatistics.starPercent = this.getStarPercentFromId(elStatistics.id);
+				this.fillVote(elStatistics.starPercent, elStatistics);
+
 			}, this));
 
 			$.each($('.rabidRatingUser'), $.proxy(function(index, el) {
@@ -53,120 +53,122 @@ var RabidRatings = function (options) {
 					//If you want IE6 users to have something fancier to look at, add it here.
 					$('.ratingText', el).insertBefore(el);
 					$(el).remove();
+					return;
 				}
-				else
-				{
-					//Does this if the browser is NOT IE6. IE6 users don't deserve fancy ratings. >:(
-					el.id = $(el).attr('id');
-					el.wrapper = $('.wrapper', el);
-					el.textEl = $('.ratingText', el);
-					el.offset = $(el).offset().left
-					el.fill = $('.ratingFill', el);
-					el.starPercent = this.getStarPercentFromId(el.id);
-					el.ratableId   = this.getRatableId(el.id);
-					el.csrf = this.getCsrfProtection();
-					this.fillVote(el.starPercent, el);
-					
-					// used for statistics part
-					elStatistics = $('.rabidRatingStatistics')[index]
-					if (elStatistics) {
-						elStatistics.fill = $('.ratingFill', elStatistics);
-						elStatistics.textEl = $('.ratingText', elStatistics);
-						elStatistics.totalVotes = $('.totalVotes', elStatistics.textEl);
-						elStatistics.ratingAvg = $('.ratingAvg', elStatistics.textEl);
-						elStatistics.starPercent = this.getStarPercentFromId(elStatistics.id);
-						this.fillVote(elStatistics.starPercent, elStatistics);
+
+				//Does this if the browser is NOT IE6. IE6 users don't deserve fancy ratings. >:(
+				el.id = $(el).attr('id');
+				el.wrapper = $('.wrapper', el);
+				el.textEl = $('.ratingText', el);
+				el.offset = $(el).offset().left;
+				el.fill = $('.ratingFill', el);
+				el.starPercent = this.getStarPercentFromId(el.id);
+				el.ratableId   = this.getRatableId(el.id);
+				el.csrf = this.getCsrfProtection();
+				this.fillVote(el.starPercent, el);
+
+				// used for statistics part
+				elStatistics = $('.rabidRatingStatistics')[index];
+				if (elStatistics) {
+					elStatistics.fill = $('.ratingFill', elStatistics);
+					elStatistics.textEl = $('.ratingText', elStatistics);
+					elStatistics.totalVotes = $('.totalVotes', elStatistics.textEl);
+					elStatistics.ratingAvg = $('.ratingAvg', elStatistics.textEl);
+					elStatistics.starPercent = this.getStarPercentFromId(elStatistics.id);
+					this.fillVote(elStatistics.starPercent, elStatistics);
+				}
+				// end used for statistics part
+
+				el.currentFill = this.getFillPercent(el.starPercent);
+
+				el.mouseCrap = $.proxy(function(e) {
+					var fill = e.pageX - $(el).offset().left;
+					if (($.browser.msie && $.browser.version=="7.0")) {
+						// damn IE7 - hack - hardcoded position
+						fill = e.pageX - 820;
 					}
-					// end used for statistics part
-					
-					el.currentFill = this.getFillPercent(el.starPercent);
+					var fillPercent = this.getVotePercent(fill);
+					var step = (100 / this.options.scale) * this.options.snap;
+					var nextStep = Math.floor(fillPercent / step) + 1;
+					$(el.textEl).html(this.options.verbalValues[nextStep]);
+					this.fillVote(nextStep * step, el);
+				}, this);
 
-					el.mouseCrap = $.proxy(function(e) {
-						var fill = e.pageX - $(el).offset().left;
-						if (($.browser.msie && $.browser.version=="7.0")) {
-							// damn IE7 - hack - hardcoded position
-							fill = e.pageX - 820;
-						}
-						var fillPercent = this.getVotePercent(fill);
-						var step = (100 / this.options.scale) * this.options.snap;
-						var nextStep = Math.floor(fillPercent / step) + 1;
-						$(el.textEl).html(this.options.verbalValues[nextStep]);
-						this.fillVote(nextStep * step, el);
-					}, this);
+				el.mouseenter = function(e) {
+					el.oldText = $(el.textEl).html();
+					el.wrapper.mousemove(el.mouseCrap)
+				}
 
-					el.mouseenter = function(e) {
-						el.oldText = $(el.textEl).html();
-						el.wrapper.mousemove(el.mouseCrap)
-					}
+				el.mouseleave = function(e) {
+					$(el).unbind('mousemove', el.mouseCrap);
+					$(el.fill).css('width',el.currentFill);
+					$(el.textEl).html(el.oldText);
+				}
 
-					el.mouseleave = function(e) {
-						$(el).unbind('mousemove', el.mouseCrap);
-						$(el.fill).css('width',el.currentFill);
-						$(el.textEl).html(el.oldText);
-					}
-
-					el.click = $.proxy(function(e) {
-						el.currentFill = el.newFill;
-						$(el.fill).addClass('ratingVoted');
-						$(el.wrapper).unbind();
-						$(el.textEl).addClass('loading');
-						var votePercent = this.getVotePercent(el.newFill);
-						if (this.options.url != null) {
-							$.ajax({
-								beforeSend: function(xhrObj){
-                        			xhrObj.setRequestHeader('X-CSRFToken', el.csrf);
-                    			},
-                    			url: this.options.url,
-								type: 'POST',
-								dataType: "json",
-								success: el.setResultVaules,
-								data: {vote: votePercent,
-									   id: el.ratableId,
-									   csrf_token: el.csrf,
-                        		       csrf_name: 'csrfmiddlewaretoken',
-                                       csrf_xname: 'X-CSRFToken',
-									   csrfmiddlewaretoken:el.csrf}
-							});
-						}
-					}, this)
-
-					el.wrapper.mouseenter(el.mouseenter);
-					el.wrapper.mouseleave(el.mouseleave);
-					el.wrapper.click(el.click);
-
-					el.setResultVaules = $.proxy(function(data) {
-						if (data.code == 200) {
-							$(el.textEl).removeClass('loading');
-							$(el.textEl).html(data.text);
-							// used for statistics part
-							if (elStatistics) {
-								$(elStatistics.totalVotes).html(data.total_votes);
-								$(elStatistics.ratingAvg).html(data.avg_rating);
-								var percent = this.computeStarPercent(data.avg_rating.replace(",", "."), this.options.scale)
-								this.fillVote(percent, elStatistics);
+				el.click = $.proxy(function(e) {
+					el.currentFill = el.newFill;
+					$(el.fill).addClass('ratingVoted');
+					$(el.wrapper).unbind();
+					$(el.textEl).addClass('loading');
+					var votePercent = this.getVotePercent(el.newFill);
+					if (this.options.url != null) {
+						$.ajax({
+							beforeSend: function(xhrObj){
+								xhrObj.setRequestHeader('X-CSRFToken', el.csrf);
+							},
+							url: this.options.url,
+							type: 'POST',
+							dataType: "json",
+							success: el.setResultVaules,
+							data: {
+								vote: votePercent,
+								id: el.ratableId,
+								csrf_token: el.csrf,
+								csrf_name: 'csrfmiddlewaretoken',
+								csrf_xname: 'X-CSRFToken',
+								csrfmiddlewaretoken: el.csrf
 							}
-							// end used for statistics part 
+						});
+					}
+				}, this)
+
+				el.wrapper.mouseenter(el.mouseenter);
+				el.wrapper.mouseleave(el.mouseleave);
+				el.wrapper.click(el.click);
+
+				el.setResultVaules = $.proxy(function(data) {
+					if (data.code == 200) {
+						$(el.textEl).removeClass('loading');
+						$(el.textEl).html(data.text);
+						// used for statistics part
+						if (elStatistics) {
+							$(elStatistics.totalVotes).html(data.total_votes);
+							$(elStatistics.ratingAvg).html(data.avg_rating);
+							var percent = this.computeStarPercent(data.avg_rating.replace(",", "."), this.options.scale)
+							this.fillVote(percent, elStatistics);
 						}
-						else {
-							el.showError(data.error); return false;
-						}
-					}, this);
-					
-					el.showError = $.proxy(function(error) {
-						$(el.textEl).addClass('ratingError');
-						oldTxt = $(el.textEl).html();
-						$(el.textEl).html(error);
-						$(el).delay(1000).queue($.proxy(function() {
-							$(el.textEl).html(oldTxt);
-							$(el.textEl).removeClass('ratingError');
-							el.wrapper.mouseenter(el.mouseenter);
-							el.wrapper.mouseleave(el.mouseleave);
-							el.wrapper.click(el.click);
-							this.fillVote(el.starPercent, el);
-							if (elStatistics) this.fillVote(elStatistics.starPercent, elStatistics);
-						}, this));
-					}, this);
-				}
+						// end used for statistics part
+					}
+					else {
+						el.showError(data.error); return false;
+					}
+				}, this);
+
+				el.showError = $.proxy(function(error) {
+					$(el.textEl).addClass('ratingError');
+					oldTxt = $(el.textEl).html();
+					$(el.textEl).html(error);
+					$(el).delay(1000).queue($.proxy(function() {
+						$(el.textEl).html(oldTxt);
+						$(el.textEl).removeClass('ratingError');
+						el.wrapper.mouseenter(el.mouseenter);
+						el.wrapper.mouseleave(el.mouseleave);
+						el.wrapper.click(el.click);
+						this.fillVote(el.starPercent, el);
+						if (elStatistics) this.fillVote(elStatistics.starPercent, elStatistics);
+					}, this));
+				}, this);
+
 			}, this));
 		},
 
@@ -216,8 +218,9 @@ var RabidRatings = function (options) {
 	return rr
 }
 
-$(document).ready(function(e) {
-	var rating = new RabidRatings({url:rabidratings_submit_url,
-								   verbalValues:rabidratings_verbal_values
-		});
+$(function(e) {
+	var rating = new RabidRatings({
+		url: rabidratings_submit_url,
+		verbalValues: rabidratings_verbal_values
+	});
 });
