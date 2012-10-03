@@ -30,13 +30,14 @@ def show_rating(context, obj, show_parts='all'):
     """ Displays necessary html for the rating. """
 
     request = context.get('request')
-
     rating = Rating.objects.get_for_object(obj)
+
+    if hasattr(request, 'user') and request.user.is_authenticated():
+        lookup = dict(user=request.user)
+    else:
+        lookup = dict(ip=request.META['REMOTE_ADDR'])
+
     try:
-        if request.user.is_authenticated():
-            lookup = dict(user=request.user)
-        else:
-            lookup = dict(ip=request.META['REMOTE_ADDR'])
         rating_event = RatingEvent.objects.get_for_object(obj, False, **lookup)
     except RatingEvent.DoesNotExist:
         user_rating = 0
@@ -44,6 +45,7 @@ def show_rating(context, obj, show_parts='all'):
     else:
         user_rating = rating_event.stars_value
         user_rating_updated = rating_event.updated
+
     return {
         'rating_key': rating.key,
         'total_votes': rating.total_votes,
