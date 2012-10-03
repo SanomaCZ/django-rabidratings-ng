@@ -107,7 +107,6 @@ var RabidRatings = function (options) {
 
 				el.click = $.proxy(function(e) {
 					el.currentFill = el.newFill;
-					$(el.fill).addClass('ratingVoted');
 					$(el.wrapper).unbind();
 					$(el.textEl).addClass('loading');
 					var votePercent = this.getVotePercent(el.newFill);
@@ -132,14 +131,13 @@ var RabidRatings = function (options) {
 					}
 				}, this)
 
-				el.wrapper.mouseenter(el.mouseenter);
-				el.wrapper.mouseleave(el.mouseleave);
-				el.wrapper.click(el.click);
+				this.bindPossibilityVote(el);
 
 				el.setResultVaules = $.proxy(function(data) {
 					if (data.code == 200) {
 						$(el.textEl).removeClass('loading');
 						$(el.textEl).html(data.text);
+						el.oldText = $(el.textEl).html();
 						// used for statistics part
 						if (elStatistics) {
 							$(elStatistics.totalVotes).html(data.total_votes);
@@ -148,6 +146,7 @@ var RabidRatings = function (options) {
 							this.fillVote(percent, elStatistics);
 						}
 						// end used for statistics part
+						this.bindPossibilityVote(el);
 					}
 					else {
 						el.showError(data.error); return false;
@@ -161,9 +160,7 @@ var RabidRatings = function (options) {
 					$(el).delay(1000).queue($.proxy(function() {
 						$(el.textEl).html(oldTxt);
 						$(el.textEl).removeClass('ratingError');
-						el.wrapper.mouseenter(el.mouseenter);
-						el.wrapper.mouseleave(el.mouseleave);
-						el.wrapper.click(el.click);
+						this.bindPossibilityVote(el);
 						this.fillVote(el.starPercent, el);
 						if (elStatistics) this.fillVote(elStatistics.starPercent, elStatistics);
 					}, this));
@@ -206,6 +203,12 @@ var RabidRatings = function (options) {
 		getRatableId: function(id) {
 			var stars = id.match(/([^-]+)-(\d*\.?\d+)_(\d*\.?\d+)$/);
 			return stars[1];
+		},
+
+		bindPossibilityVote: function(el) {
+			el.wrapper.mouseenter(el.mouseenter);
+			el.wrapper.mouseleave(el.mouseleave);
+			el.wrapper.click(el.click);
 		},
 				
 		getCsrfProtection: function() {

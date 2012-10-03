@@ -31,10 +31,6 @@
 	background-color: #E00814;
 }
 
-.rabidRatingUser .ratingVoted {
-	cursor: default;
-}
-
 .rabidRatingUser .ratingText strong {
 	color: #E00814;
 }
