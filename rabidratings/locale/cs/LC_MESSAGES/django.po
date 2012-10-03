@@ -125,7 +125,7 @@ msgstr "Ještě jste nehodnotil"
 
 #: templates/rabidratings/rating.html:17
 msgid "If you want rating, you have to be logged in"
-msgstr "Pokud chcete hodnotit musíte se přihlásit"
+msgstr "Hodnotit mohou pouze přihlášení uživatelé"
 
 #: templates/rabidratings/rating.html:23
 msgid "by users"
