@@ -21,11 +21,11 @@ from rabidratings.models import Rating, RatingEvent
 
 
 class RatingAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('__unicode__', 'avg_rating', 'updated',)
 
 
 class RatingEventAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('__unicode__', 'user', 'value', 'updated',)
 
 admin.site.register(Rating, RatingAdmin)
 admin.site.register(RatingEvent, RatingEventAdmin)
