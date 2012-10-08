@@ -40,7 +40,7 @@ var RabidRatings = function (options) {
 				elStatistics.id = $(elStatistics).attr('id');
 				elStatistics.fill = $('.ratingFill', elStatistics);
 				elStatistics.textEl = $('.ratingText', elStatistics);
-				elStatistics.totalVotes = $('.totalVotes', elStatistics.textEl);
+				elStatistics.totalVotes = $('.totalVotes', elStatistics);
 				elStatistics.ratingAvg = $('.ratingAvg', elStatistics.textEl);
 				elStatistics.starPercent = this.getStarPercentFromId(elStatistics.id);
 				this.fillVote(elStatistics.starPercent, elStatistics);
@@ -72,7 +72,7 @@ var RabidRatings = function (options) {
 				if (elStatistics) {
 					elStatistics.fill = $('.ratingFill', elStatistics);
 					elStatistics.textEl = $('.ratingText', elStatistics);
-					elStatistics.totalVotes = $('.totalVotes', elStatistics.textEl);
+					elStatistics.totalVotes = $('.totalVotes', elStatistics);
 					elStatistics.ratingAvg = $('.ratingAvg', elStatistics.textEl);
 					elStatistics.starPercent = this.getStarPercentFromId(elStatistics.id);
 					this.fillVote(elStatistics.starPercent, elStatistics);
