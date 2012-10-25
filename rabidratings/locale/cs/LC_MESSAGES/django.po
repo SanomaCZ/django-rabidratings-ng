@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-27 11:06+0200\n"
+"POT-Creation-Date: 2012-10-25 13:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,24 +19,24 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2\n"
 
 #: conf.py:24
-msgid "Very bad"
-msgstr "Velmi špatné"
+msgid "very bad"
+msgstr "velmi špatný"
 
 #: conf.py:25
-msgid "Not much"
-msgstr "Nic moc"
+msgid "not much"
+msgstr "nic moc"
 
 #: conf.py:26
-msgid "Average"
-msgstr "Průměrné"
+msgid "average"
+msgstr "průměrný"
 
 #: conf.py:27
-msgid "Good"
-msgstr "Dobré"
+msgid "fair"
+msgstr "dobrý"
 
 #: conf.py:28
-msgid "Excellent"
-msgstr "Vynikající"
+msgid "excellent"
+msgstr "vynikající"
 
 #: models.py:47
 msgid "Target content type"
@@ -142,6 +142,9 @@ msgstr "Nemohu uložit vaše hodnocení, prosím zkuste to později"
 #: templates/rabidratings/rating_result_text.html:4
 msgid "You can change the view"
 msgstr "Kdykoli můžete změnit svůj názor"
+
+#~ msgid "Good"
+#~ msgstr "Dobré"
 
 #~ msgid "Rating event already exists"
 #~ msgstr "Tato událost hodnocení již existuje"

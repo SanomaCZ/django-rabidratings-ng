@@ -21,9 +21,9 @@ RABIDRATINGS_TIME_DELETE_OLD_RATINGS = getattr(settings, 'RABIDRATINGS_TIME_DELE
 
 # verval values for RatingEvent model numerical value
 RATING_VERBAL_VALUES = {
-    20: _('Very bad'),
-    40: _('Not much'),
-    60: _('Average'),
-    80: _('Good'),
-    100: _('Excellent'),
+    20: _('very bad'),
+    40: _('not much'),
+    60: _('average'),
+    80: _('fair'),
+    100: _('excellent'),
 }
