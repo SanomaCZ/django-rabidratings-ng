@@ -161,7 +161,7 @@ class RatingEvent(BaseRating):
         verbose_name_plural = _('Rating events')
 
     def clean(self):
-        if not self.user:
+        if conf.RABIDRATINGS_DISABLE_ANONYMOUS_USERS and not self.user:
             raise ValidationError(_("User is required for rating event"))
 
     def save(self, *args, **kwargs):
@@ -215,7 +215,7 @@ def by_rating(self):
     order_by.extend(self.query.order_by[:])
     return self.extra(
         tables=['%s' % rating_table],
-        where=['''%(rating_table)s.target_ct_id IN %(cts)s 
+        where=['''%(rating_table)s.target_ct_id IN %(cts)s
                     and %(rating_table)s.target_id = %(target_id)s''' % {
                                                                          'rating_table': rating_table,
                                                                          'cts': str_cts,

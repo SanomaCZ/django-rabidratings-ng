@@ -19,6 +19,9 @@ RABIDRATINGS_CTS_FOR_CREATE_RATING = getattr(settings, 'RABIDRATINGS_CTS_FOR_CRE
 
 RABIDRATINGS_TIME_DELETE_OLD_RATINGS = getattr(settings, 'RABIDRATINGS_TIME_DELETE_OLD_RATINGS', 60 * 60 * 24 * 365)
 
+# Anonymous users are disabled by default
+RABIDRATINGS_DISABLE_ANONYMOUS_USERS = getattr(settings, 'RABIDRATINGS_DISABLE_ANONYMOUS_USERS', True)
+
 # verval values for RatingEvent model numerical value
 RATING_VERBAL_VALUES = {
     20: _('very bad'),
