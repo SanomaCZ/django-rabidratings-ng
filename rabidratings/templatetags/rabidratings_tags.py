@@ -47,6 +47,7 @@ def show_rating(context, obj, show_parts='all'):
         user_rating_updated = rating_event.updated
 
     return {
+        'request': request,
         'rating_key': rating.key,
         'total_votes': rating.total_votes,
         'total_ratings': rating.total_rating,
