@@ -2,8 +2,7 @@ include MANIFEST.in
 include README.rst
 include dev_requirements.txt
 include requirements.txt
-recursive-include tests *
-recursive-include rabidratings/*/locale *
-recursive-include rabidratings/*/templates *
+recursive-include rabidratings/locale *
+recursive-include rabidratings/templates *
 
 global-exclude .coverage
