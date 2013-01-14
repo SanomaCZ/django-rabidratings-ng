@@ -73,7 +73,7 @@ def record_vote(request):
 
     except Exception as e:
         transaction.rollback()
-        logger.error(e)
+        logger.error(e, exc_info=True)
         result = dict(
             code=500,
             error=render_to_string('rabidratings/rating_result_error_text.html')
