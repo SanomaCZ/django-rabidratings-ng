@@ -211,7 +211,7 @@ def by_rating(self):
 
     str_cts = "(%s)" % (", ".join([str(ContentType.objects.get_for_model(m).id) for m in _get_subclasses(self.model)]),)
     rating_table = qn(Rating._meta.db_table)
-    order_by = ['-%s.avg_rating' % rating_table]
+    order_by = ['-%s.avg_rating' % rating_table, '-%s.total_votes' % rating_table]
     order_by.extend(self.query.order_by[:])
     return self.extra(
         tables=['%s' % rating_table],
