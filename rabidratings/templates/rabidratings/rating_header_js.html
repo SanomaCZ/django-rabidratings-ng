@@ -1,5 +1,6 @@
+{% load url from future %}
 <script src="{{ rabidratings_static_url }}js/rabidratings.js"></script>
 <script>
-var rabidratings_submit_url="{% url rabidratings:record_vote %}";
+var rabidratings_submit_url="{% url "rabidratings:record_vote" %}";
 var rabidratings_verbal_values={1: '{{ verbal_values.20 }}', 2: '{{ verbal_values.40 }}', 3:'{{ verbal_values.60 }}', 4:'{{ verbal_values.80 }}', 5:'{{ verbal_values.100 }}'};
 </script>
