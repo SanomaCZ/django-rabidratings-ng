@@ -1,9 +1,11 @@
 include MANIFEST.in
 include README.rst
-include dev_requirements.txt
+include setup.py
 include requirements.txt
 recursive-include rabidratings/locale *
 recursive-include rabidratings/templates *
 recursive-include rabidratings/static *
 
 global-exclude .coverage
+global-exclude nosetests.xml
+global-exclude *.py[co]
