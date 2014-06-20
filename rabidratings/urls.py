@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import url, patterns
+from django.conf.urls import url, patterns
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 
