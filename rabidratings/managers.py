@@ -1,10 +1,12 @@
 import sys
 
-from django.db import models, transaction, IntegrityError
+from django.db import models, IntegrityError
 from django.db.models.related import RelatedObject
 from django.contrib.contenttypes.models import ContentType
+from django.utils import six
 
 from rabidratings.utils import import_module_member
+from rabidratings.utils.transaction import atomic
 from rabidratings.conf import RABIDRATINGS_GET_OBJECT_FUNC
 
 
@@ -25,7 +27,7 @@ def get_object(model, **kwargs):
 get_object.cache = {}
 
 
-def get_or_create(model, commit=True, **kwargs):
+def get_or_create(model, manager, commit=True, **kwargs):
     assert kwargs, \
                 'get_or_create() must be passed at least one keyword argument'
     defaults = kwargs.pop('defaults', {})
@@ -41,25 +43,22 @@ def get_or_create(model, commit=True, **kwargs):
             params.update(defaults)
             obj = model(**params)
             if commit:
-                sid = transaction.savepoint()
-                obj.save(force_insert=True)
-                transaction.savepoint_commit(sid)
+                with atomic(using=manager.db):
+                    obj.save(force_insert=True)
             return obj, True
         except IntegrityError:
-            if commit:
-                transaction.savepoint_rollback(sid)
             exc_info = sys.exc_info()
             try:
                 return get_object(model, **lookup), False
             except model.DoesNotExist:
-                # Re-raise the IntegrityError with its original traceback.
-                raise exc_info[1], None, exc_info[2]
+                # Re-raise the DatabaseError with its original traceback.
+                six.reraise(*exc_info)
 
 
 class BaseRatingManager(models.Manager):
 
     def get_or_create(self, commit=True, **kwargs):
-        return get_or_create(self.model, commit, **kwargs)
+        return get_or_create(self.model, self, commit, **kwargs)
 
     def get_object(self, *args, **kwargs):
         return get_object(self.model, **kwargs)

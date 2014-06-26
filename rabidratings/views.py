@@ -18,8 +18,6 @@
 import logging
 
 from django.contrib.contenttypes.models import ContentType
-from django.db import transaction
-from django.db.transaction import commit_manually
 from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_protect
@@ -33,7 +31,6 @@ logger = logging.getLogger(__name__)
 
 @csrf_protect
 @require_POST
-@commit_manually
 def record_vote(request):
     """
     Records the vote - note, we drop down and need to commit this transaction
@@ -72,14 +69,11 @@ def record_vote(request):
         )
 
     except Exception as e:
-        transaction.rollback()
         logger.error(e, exc_info=True)
         result = dict(
             code=500,
             error=render_to_string('rabidratings/rating_result_error_text.html')
         )
-    else:
-        transaction.commit()
 
     logger.debug(result)
     return HttpResponseJson(result)

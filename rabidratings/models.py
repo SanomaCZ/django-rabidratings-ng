@@ -35,6 +35,7 @@ except ImportError:
 
 from rabidratings import conf
 from rabidratings.utils import get_natural_key
+from rabidratings.utils.transaction import atomic
 from rabidratings.managers import (
                                    _get_subclasses,
                                    BaseRatingManager,
@@ -170,18 +171,19 @@ class RatingEvent(BaseRating):
         except ValidationError, e:
             raise IntegrityError(e.messages)
 
-        if self.value > 0:
-            rating, created = Rating.objects.get_or_create(False, target_ct=self.target_ct, target_id=self.target_id)
+        with atomic():
+            if self.value > 0:
+                rating, created = Rating.objects.get_or_create(False, target_ct=self.target_ct, target_id=self.target_id)
 
-            #redundant check for save triggered outside of view (view's save saves 1 query)
-            if self.pk and getattr(self, 'is_changing', None) is None:
-                self.is_changing = True
-                self.old_value = self._default_manager.get(pk=self.pk).value
+                #redundant check for save triggered outside of view (view's save saves 1 query)
+                if self.pk and getattr(self, 'is_changing', None) is None:
+                    self.is_changing = True
+                    self.old_value = self._default_manager.get(pk=self.pk).value
 
-            rating.add_rating(self)
-            rating.save()
-            self.old_value = self.value
-        super(RatingEvent, self).save(*args, **kwargs)
+                rating.add_rating(self)
+                rating.save()
+                self.old_value = self.value
+            super(RatingEvent, self).save(*args, **kwargs)
 
     @property
     def stars_value(self):
