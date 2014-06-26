@@ -3,7 +3,7 @@ import rabidratings
 
 install_requires = [
     'setuptools>=0.6b1',
-    'Django>=1.3,<1.6',
+    'Django>=1.4.5,<1.7',
     'south>=0.7',
 ]
 
