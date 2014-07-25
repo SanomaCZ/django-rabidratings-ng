@@ -1,6 +1,6 @@
 from django.conf.urls import url, patterns
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from rabidratings.views import record_vote
 

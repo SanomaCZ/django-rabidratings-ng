@@ -1,3 +1,10 @@
+import django
+
+try:
+    django.setup()
+except AttributeError:
+    pass
+
 test_runner = None
 old_config = None
 
