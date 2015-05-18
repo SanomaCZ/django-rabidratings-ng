@@ -1,9 +1,15 @@
 import sys
 
+from django import VERSION
 from django.db import models, IntegrityError
-from django.db.models.related import RelatedObject
 from django.contrib.contenttypes.models import ContentType
 from django.utils import six
+
+if VERSION >= (1, 8):
+    from django.db.models.fields.related import ForeignObjectRel
+else:
+    from django.db.models.related import RelatedObject as ForeignObjectRel
+    ForeignObjectRel.related_model = property(lambda self: self.model)
 
 from rabidratings.utils import import_module_member
 from rabidratings.utils.transaction import atomic
@@ -78,7 +84,7 @@ def _get_subclasses(model):
     subclasses = [model]
     for f in model._meta.get_all_field_names():
         field = model._meta.get_field_by_name(f)[0]
-        if (isinstance(field, RelatedObject) and
+        if (isinstance(field, ForeignObjectRel) and
             getattr(field.field.rel, "parent_link", None)):
-            subclasses.extend(_get_subclasses(field.model))
+            subclasses.extend(_get_subclasses(field.related_model))
     return subclasses
