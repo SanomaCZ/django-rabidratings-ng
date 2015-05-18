@@ -122,3 +122,5 @@ INSTALLED_APPS = (
 
     'rabidratings',
 )
+
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'

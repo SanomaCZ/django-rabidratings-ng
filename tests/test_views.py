@@ -23,7 +23,7 @@ class TestRatingsVote(TestCase):
     def test_record_vote_by_user_success(self):
         data = dict(
             id=self.rating.key,
-            vote='80'
+            vote='90'
         )
         self.client.login(username='johan', password='johan')
         response = self.client.post('/submit/', data)
@@ -31,7 +31,7 @@ class TestRatingsVote(TestCase):
         tools.assert_equals(200, json.loads(response.content)['code'])
         tools.assert_equals(RatingEvent.objects.count(), 1)
         tools.assert_equals(Rating.objects.count(), 1)
-        tools.assert_equals('4', json.loads(response.content)['avg_rating'])
+        tools.assert_in('4.5', json.loads(response.content)['avg_rating'])
 
     def test_record_voteby_user_fail(self):
         data = dict(
@@ -58,7 +58,7 @@ class TestRatingsVote(TestCase):
     def test_record_vote_by_user_for_obj_again(self):
         data = dict(
             id=self.rating.key,
-            vote='80'
+            vote='90'
         )
         self.client.login(username='johan', password='johan')
         response = self.client.post('/submit/', data)
@@ -66,20 +66,20 @@ class TestRatingsVote(TestCase):
         tools.assert_equals(200, json.loads(response.content)['code'])
         tools.assert_equals(RatingEvent.objects.count(), 1)
         tools.assert_equals(Rating.objects.count(), 1)
-        tools.assert_equals('4', json.loads(response.content)['avg_rating'])
+        tools.assert_equals('4.5', json.loads(response.content)['avg_rating'])
 
-        data.update({'vote': '40'})
+        data.update({'vote': '50'})
         response = self.client.post('/submit/', data)
         tools.assert_equals(200, response.status_code)
         tools.assert_equals(200, json.loads(response.content)['code'])
         tools.assert_equals(RatingEvent.objects.count(), 1)
         tools.assert_equals(Rating.objects.count(), 1)
-        tools.assert_equals('2', json.loads(response.content)['avg_rating'])
+        tools.assert_equals('2.5', json.loads(response.content)['avg_rating'])
 
     def test_record_vote_by_two_user_for_same_obj(self):
         data = dict(
             id=self.rating.key,
-            vote='80'
+            vote='90'
         )
         self.client.login(username='johan', password='johan')
         response = self.client.post('/submit/', data)
@@ -87,7 +87,7 @@ class TestRatingsVote(TestCase):
         tools.assert_equals(200, json.loads(response.content)['code'])
         tools.assert_equals(RatingEvent.objects.count(), 1)
         tools.assert_equals(Rating.objects.count(), 1)
-        tools.assert_equals('4', json.loads(response.content)['avg_rating'])
+        tools.assert_equals('4.5', json.loads(response.content)['avg_rating'])
 
         data.update({'vote': '40'})
         self.client.login(username='joe', password='joe')
@@ -96,4 +96,4 @@ class TestRatingsVote(TestCase):
         tools.assert_equals(200, json.loads(response.content)['code'])
         tools.assert_equals(RatingEvent.objects.count(), 2)
         tools.assert_equals(Rating.objects.count(), 1)
-        tools.assert_equals('3', json.loads(response.content)['avg_rating'])
+        tools.assert_equals('3.2', json.loads(response.content)['avg_rating'])
