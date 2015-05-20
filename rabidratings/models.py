@@ -152,7 +152,7 @@ class RatingEvent(BaseRating):
     Yes, this is not optimal for proxies, but good enough because if you
     are behind a proxy you should be working, and not rating stuff.
     """
-    ip = models.IPAddressField(_('IP address'), null=True)
+    ip = models.GenericIPAddressField(_('IP address'), null=True)
     user = models.ForeignKey(User, db_index=True, blank=True, null=True, verbose_name=_('User who has rated'))
     value = models.PositiveIntegerField(_('Value'), default=0)
 
